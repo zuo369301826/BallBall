@@ -1,0 +1,7 @@
+syntax = "proto3";
+// 用户登录
+message msg_t {
+    string msg = 1;
+    string x = 2;
+    string y = 3;
+}
