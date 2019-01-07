@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package Msg;
+
+message Food{//食物
+    int32 id = 1;
+    float posX = 2;
+    float posY = 3;
+    float bg = 4;
+    float size = 5; 
+};
+
+message Map{//地图
+    int32 FOODS_NUM = 1;//总数
+    repeated Food food = 2;//位置
+};
+

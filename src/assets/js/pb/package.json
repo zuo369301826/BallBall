@@ -1,0 +1,16 @@
+{
+  "name": "pb",
+  "version": "1.0.0",
+  "description": "",
+  "main": "msg_pb.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "formidable": "^1.2.1",
+    "google-protobuf": "^3.6.1"
+  }
+}
