@@ -30,14 +30,14 @@ const FOODS_COLORS = [
     "rgb(137,157,192)"
 ];
 
-//食物集合
-var foods = [];
 
-//食物类
+
+//------------------------------------------------------------食物类
 class Food{
-    constructor(element, size, bg, posX, posY){
+    constructor(element, id,  size, bg, posX, posY){
         this.element = element;
         this.size = size;
+        this.id = id;
         this.bg = FOODS_COLORS[bg];
         this.posX = posX;
         this.posY = posY;
@@ -62,10 +62,16 @@ class Food{
     }
 }
 
+//食物集合
+var foods =  [];
+console.log(foods.length); 
+
+
 //生成食物
-function makeFood(x, y, _bg, fs) {
+function makeFood(id, x, y, _bg, fs) {
     var food_div = document.createElement("div");
     food_div.setAttribute("class","food");
+    food_div.setAttribute("id", id);
     document.body.insertBefore(food_div,document.body.firstChild);
     let size;
     if(IS_SAME_SIZE){
@@ -76,7 +82,7 @@ function makeFood(x, y, _bg, fs) {
     let bg = parseInt(_bg*(FOODS_COLORS.length-1));
     let pos_x = x*document.documentElement.clientWidth;
     let pos_y = y*document.documentElement.clientHeight;
-    var food = new Food(food_div, size, bg, pos_x, pos_y);
+    var food = new Food(food_div, id, size, bg, pos_x, pos_y);
     foods.push(food);
 }
 
@@ -120,10 +126,21 @@ $(function () {
                     progress:function () {
                           for(let i=0;i<foods.length;i++){
                             if(Food.isEat(ball, foods[i])){ //检测食物是否被球吃掉
+                                var overfood = new proto.Msg.Food();//声明食物结构体
+                                var clientMsg = new proto.Msg.ClientMessage(); //声明消息结构体
+
+                                overfood.setId(foods[i].id)
+                                clientMsg.setOrder(proto.Msg.ClientOrder.CLIENTORDER_FOOD_EAT)
+                                clientMsg.setFood(overfood)
                                 
-                                ball.eat(foods[i]);
+                                //console.log(clientMsg.toObject());
+                                var S = clientMsg.serializeBinary()//序列化
+                                ws.send(S)
+
+                                //ball.eat(foods[i]);
                                 foods[i].disappear();
                                 foods.splice(i,1);
+                                console.log(i + "号小球被吃");
                             }
                        }
                        /*
@@ -171,7 +188,7 @@ $(function () {
     }
 
 
-      //------------------------------------------------------------食物
+
  
 
     //------------------------------------------------------------炸弹类
@@ -220,25 +237,7 @@ $(function () {
     var ball_div = document.body.lastChild;
     var ball = new Ball(ball_div,INIT_SIZE,color_index,name);
 
-    //生成炸弹
-    function makeBomb(x, y, s) {
-            var bomb_div = document.createElement("div");
-            bomb_div.setAttribute("class","bomb");
-            document.body.insertBefore(bomb_div,document.body.firstChild);
-            let size;
-            if(IS_SAME_SIZE){
-                size = DEFAULT_BOMB_SIZE;
-            }else {
-                size = s*6+10;
-            }
-            let bg = 0;
-            let pos_x = x*document.documentElement.clientWidth;
-            let pos_y = y*document.documentElement.clientHeight;
-            var bomb = new Bomb(bomb_div, size, bg, pos_x, pos_y);
-            bombs.push(bomb);
-    }
-
-
+    /*
     //初始化食物
     function FoodInit(){
         for(let i=0;i<FOODS_NUM;i++){
@@ -246,31 +245,19 @@ $(function () {
         }
     }
 
-    //初始化炸弹
-    function BOMBInit(){
-        for(let i=0;i<BOMB_NUM;i++){
-            makeBomb(Math.random(),Math.random(),Math.random());
-        }
-    }
-
     //开始初始化
-    //FoodInit()
-    //BOMBInit()
-
+    FoodInit()
 
     //JavaScript 计时事件
-    setInterval(function () {
+    setInterval( function () {
         if(foods.length < FOODS_NUM){
             let num = FOODS_NUM - foods.length;
             makeFood(Math.random(),Math.random(),Math.random(),Math.random());
         }
-        /*
-        if(bombs.length < BOMB_NUM){
-            let num = BOMB_NUM - bombs.length;
-            makeBomb(Math.random(),Math.random(),Math.random());
-        }
-        */
     },REFRESH_TIME*100);
+    */
+
+
     
 
     //鼠标移动指令
