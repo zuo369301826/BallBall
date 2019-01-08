@@ -12,8 +12,8 @@ import (
 )
 
 //TMap 地图
-var TMap = &Msg.Map{} //定义地图结构体
-var num = 100           //定义总个数
+var TMap = &Msg.MapInit{} //定义地图结构体
+var num = 100             //定义总个数
 
 func mapInit() {
 	TMap.FOODS_NUM = *proto.Int(num) //初始化总数为100
@@ -27,14 +27,18 @@ func mapInit() {
 		TMap.Food = append(TMap.Food, TFood)
 	}
 	fmt.Println("地图生成成功")
-
 }
 
 func echoHandler(ws *websocket.Conn) {
 	fmt.Println("已经连接")
 	for {
+		//设置指令
+		servermsg := &Msg.ServerMessage{}                      //服务器指令
+		servermsg.Order = Msg.ServerOrder_SERVERORDER_MAP_INIT //设置为更新地图指令
+		servermsg.Map = TMap
+
 		//序列化
-		pData, err := proto.Marshal(TMap)
+		pData, err := proto.Marshal(servermsg)
 		if err != nil {
 			fmt.Println("序列化错误")
 			return
@@ -46,7 +50,6 @@ func echoHandler(ws *websocket.Conn) {
 			return
 		}
 		fmt.Println("Init")
-
 		/*
 			//读数据
 			var reply []byte
@@ -82,11 +85,11 @@ func echoHandler(ws *websocket.Conn) {
 			return
 		}
 		fmt.Println("Init")
-
 	}
 }
 
 func main() {
+
 	http.Handle("/", websocket.Handler(echoHandler))
 
 	fmt.Println("服务器启动")

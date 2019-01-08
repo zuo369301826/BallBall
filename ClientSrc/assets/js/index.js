@@ -1,5 +1,39 @@
+
+//游戏状态
+const INIT_SIZE = 60;           // 玩家小球初始大小
+const INIT_SPEED = 0.082;       // 小球初始速度
+const INIT_COLOR = 5;           // 小球默认颜色下标
+FOODS_NUM =50;                  // 食物默认数量
+const BOMB_NUM = 0;             // 炸弹默认数量
+const DEFAULT_FOOD_SIZE = 15;   // 食物默认大小(IS_SAME_SIZE为true时有效)
+const DEFAULT_BOMB_SIZE = 12;   // 炸弹默认大小(IS_SAME_SIZE为true时有效)
+const REFRESH_TIME = 1.6;       // 食物/炸弹刷新时间
+const INCREASE_SPEED = 0.05;    // 小球增长速度
+const IS_SAME_SIZE = false;     // 食物/炸弹大小是否固定(false表示大小随机)
+const BOMB_COLORS = [
+    "#000000"
+];
+const FOODS_COLORS = [
+    "#FE9D01",
+    "#C5DA01",
+    "#99CF15",
+    "#008678",
+    "#D40045",
+    "#CAB2D6",
+    "rgb(200,200,169)",
+    "rgb(254,67,101)",
+    "rgb(131,175,155)",
+    "rgb(249,205,173)",
+    "rgb(250,227,113)",
+    "rgb(38,157,128)",
+    "rgb(6,128,67)",
+    "rgb(137,157,192)"
+];
+
+//食物集合
 var foods = [];
 
+//食物类
 class Food{
     constructor(element, size, bg, posX, posY){
         this.element = element;
@@ -28,62 +62,25 @@ class Food{
     }
 }
 
-FOODS_NUM =50; // 食物默认数量
-
-const IS_SAME_SIZE = false;     // 食物/炸弹大小是否固定(false表示大小随机)
-
-const DEFAULT_FOOD_SIZE = 15;   // 食物默认大小(IS_SAME_SIZE为true时有效)
-
-const FOODS_COLORS = [
-    "#FE9D01",
-    "#C5DA01",
-    "#99CF15",
-    "#008678",
-    "#D40045",
-    "#CAB2D6",
-    "rgb(200,200,169)",
-    "rgb(254,67,101)",
-    "rgb(131,175,155)",
-    "rgb(249,205,173)",
-    "rgb(250,227,113)",
-    "rgb(38,157,128)",
-    "rgb(6,128,67)",
-    "rgb(137,157,192)"
-];
-
-    //生成食物
-    function makeFood(x, y, _bg, fs) {
-        var food_div = document.createElement("div");
-        food_div.setAttribute("class","food");
-        document.body.insertBefore(food_div,document.body.firstChild);
-        let size;
-        if(IS_SAME_SIZE){
-            size = DEFAULT_FOOD_SIZE;
-        }else {
-            size = fs*20;
-        }
-        let bg = parseInt(_bg*(FOODS_COLORS.length-1));
-        let pos_x = x*document.documentElement.clientWidth;
-        let pos_y = y*document.documentElement.clientHeight;
-        var food = new Food(food_div, size, bg, pos_x, pos_y);
-        foods.push(food);
+//生成食物
+function makeFood(x, y, _bg, fs) {
+    var food_div = document.createElement("div");
+    food_div.setAttribute("class","food");
+    document.body.insertBefore(food_div,document.body.firstChild);
+    let size;
+    if(IS_SAME_SIZE){
+        size = DEFAULT_FOOD_SIZE;
+    }else {
+        size = fs*20;
+    }
+    let bg = parseInt(_bg*(FOODS_COLORS.length-1));
+    let pos_x = x*document.documentElement.clientWidth;
+    let pos_y = y*document.documentElement.clientHeight;
+    var food = new Food(food_div, size, bg, pos_x, pos_y);
+    foods.push(food);
 }
 
 $(function () {
-    const INIT_SIZE = 60;           // 玩家小球初始大小
-    const INIT_SPEED = 0.082;       // 小球初始速度
-    const INIT_COLOR = 5;           // 小球默认颜色下标
-              
-    const BOMB_NUM = 0;             // 炸弹默认数量
- 
-   
-    const DEFAULT_BOMB_SIZE = 12;   // 炸弹默认大小(IS_SAME_SIZE为true时有效)
-    const REFRESH_TIME = 1.6;       // 食物/炸弹刷新时间
-    const INCREASE_SPEED = 0.05;    // 小球增长速度
-
-    const BOMB_COLORS = [
-      "#000000"
-    ];
 
     var name = $.cookie("playerName");
     var isDie = false;
@@ -122,7 +119,8 @@ $(function () {
                     easing:"linear",
                     progress:function () {
                           for(let i=0;i<foods.length;i++){
-                            if(Food.isEat(ball,foods[i])){
+                            if(Food.isEat(ball, foods[i])){ //检测食物是否被球吃掉
+                                
                                 ball.eat(foods[i]);
                                 foods[i].disappear();
                                 foods.splice(i,1);
@@ -221,10 +219,6 @@ $(function () {
     document.body.appendChild(ball_div);
     var ball_div = document.body.lastChild;
     var ball = new Ball(ball_div,INIT_SIZE,color_index,name);
-
-
-
-    //@@@@@@@@@@@
 
     //生成炸弹
     function makeBomb(x, y, s) {

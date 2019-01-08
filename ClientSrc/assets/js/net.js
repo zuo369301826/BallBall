@@ -8,37 +8,35 @@ if ("WebSocket" in window){
 
    
    ws.onopen = function(){//连接成功
-      //alert("ok WebSocket!");
+      alert("ok WebSocket!");
    };
 
    //接受指令
    ws.onmessage = function (evt) { 
-      var reader = new FileReader();
-      reader.readAsArrayBuffer(evt.data);
+      
+      var reader = new FileReader(); 
+      
+      reader.readAsArrayBuffer(evt.data);//读取数据
+      
       reader.onload = function (e) {
-         Map = proto.Msg.Map.deserializeBinary( reader.result ) //反序列化
 
-         FOODS_NUM = Map.getFoodsNum()//设置总量
-         console.log(Map.getFoodsNum());
-  
-         food = Map.getFoodList()
-         //console.log(food.getPosX());
+         servermsg = proto.Msg.ServerMessage.deserializeBinary( reader.result ) //反序列化
 
-         /*
-         for (var index in food){
-            //x = food[index].getPosX()
-            //console.log(x);
-            console.log(food[index].array[1]);
-            console.log(index);
-        }
-        */
-
-         for(i=0; i<FOODS_NUM; i++){
-           makeFood(food[i].array[1], food[i].array[2],  food[i].array[3], food[i].array[4])
-           console.log(i);
-         }
-         console.log(Map);
-      }
+         switch  (servermsg.getOrder()) {//查看指令
+            case proto.Msg.ServerOrder.SERVERORDER_MAP_INIT:{//如果是初始化指令
+               Map = servermsg.getMap();
+               console.log(Map);
+               FOODS_NUM = Map.getFoodsNum()//设置总量
+               console.log(Map.getFoodsNum());
+               food = Map.getFoodList();
+              //生成食物
+               for(i=0; i<FOODS_NUM; i++){
+                  makeFood(food[i].array[1], food[i].array[2],  food[i].array[3], food[i].array[4])
+                  console.log(i);
+               }    
+            }// end case SERVERORDER_MAP_INIT
+         } //end switch
+      }// end reader.onload = function (e)
    };
 
    ws.onclose = function(){//断开连接
