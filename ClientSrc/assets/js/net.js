@@ -25,9 +25,10 @@ if ("WebSocket" in window){
          switch  (servermsg.getOrder()) {//查看指令
             case proto.Msg.ServerOrder.SERVERORDER_MAP_INIT:{//如果是初始化指令
                var Map = servermsg.getMap();
-               var FOODS_NUM = Map.getFoodsNum();//设置总量
-               console.log(Map.getFoodsNum());
+               FOODS_NUM = Map.getFoodsNum();//总量
+               console.log(FOODS_NUM)
                var food = Map.getFoodList();
+               
               //生成食物
                for(i=0; i<FOODS_NUM; i++){
                   makeFood(food[i].array[0], food[i].array[1], food[i].array[2],  food[i].array[3], food[i].array[4]);

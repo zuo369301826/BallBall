@@ -1,18 +1,15 @@
-
 //游戏状态
 const INIT_SIZE = 60;           // 玩家小球初始大小
-const INIT_SPEED = 0.082;       // 小球初始速度
-const INIT_COLOR = 5;           // 小球默认颜色下标
-FOODS_NUM =50;                  // 食物默认数量
-const BOMB_NUM = 0;             // 炸弹默认数量
-const DEFAULT_FOOD_SIZE = 15;   // 食物默认大小(IS_SAME_SIZE为true时有效)
-const DEFAULT_BOMB_SIZE = 12;   // 炸弹默认大小(IS_SAME_SIZE为true时有效)
-const REFRESH_TIME = 1.6;       // 食物/炸弹刷新时间
-const INCREASE_SPEED = 0.05;    // 小球增长速度
+const INIT_SPEED = 200;         // 小球初始速度
 const IS_SAME_SIZE = false;     // 食物/炸弹大小是否固定(false表示大小随机)
-const BOMB_COLORS = [
-    "#000000"
-];
+const DEFAULT_FOOD_SIZE = 15;   // 食物默认大小(IS_SAME_SIZE为true时有效)
+
+INIT_COLOR = 5;                 // 小球默认颜色下标
+FOODS_NUM = 50;                 // 食物默认数量
+
+//玩家
+var Player 
+
 const FOODS_COLORS = [
     "#FE9D01",
     "#C5DA01",
@@ -29,6 +26,7 @@ const FOODS_COLORS = [
     "rgb(6,128,67)",
     "rgb(137,157,192)"
 ];
+
 
 
 
@@ -60,12 +58,10 @@ class Food{
         }
         else return false;
     }
-}
+}// end class Food
 
 //食物集合
 var foods =  [];
-console.log(foods.length); 
-
 
 //生成食物
 function makeFood(id, x, y, _bg, fs) {
@@ -86,34 +82,249 @@ function makeFood(id, x, y, _bg, fs) {
     foods.push(food);
 }
 
+function Change_Ball_Size(size){
+    Player.setSize(size)
+}
+
+function Change_Ball_Pos(posx, posy){
+    Player.setPos(posx, posy)
+}
+
+//开始设置
 $(function () {
 
     var name = $.cookie("playerName");
     var isDie = false;
 
-    function getColorIndex(color){
-        for (let i=0;i<FOODS_COLORS.length;i++){
-            if(FOODS_COLORS[i] == color){
-                return i;
-            }
-        }
+    //获取姓名
+    if(name==null) {
+        name = prompt("Input Your Name", "");
+        $.cookie("playerName",name);
     }
 
-    //------------------------------------------------------------球球
+    //------------------------------------------------------------玩家球类
     class Ball{
         constructor(element, size ,bg, name){
             this.element = element;
             this.size = size;
             this.bg = FOODS_COLORS[bg];
             this.name = name;
+            this.p_left = 0;
+            this.p_top = 0;
             this.element.style.width = size + "px";
             this.element.style.height = size + "px";
             this.element.style.background = this.bg;
             this.element.style.lineHeight = size+"px";
             this.element.innerHTML = name;
         }
+
+        stopbykey(){//停止移动
+            if($.cookie("playerName")==this.name){
+                $(this.element).velocity("stop");
+                switch (event.which){
+                    case 65:{ // ← 左 a
+                        console.log("A")
+                        this.p_left = 0
+                    };break;
+                    case 87:{// 上 "W"
+                        console.log("W")
+                        this.p_top =  0
+                    };break;
+                    case 68:{// 右 "D"
+                        console.log("D")
+                        this.p_left = 0
+                    };break;
+                    case 83:{// 下 "s"
+                        console.log("S")
+                        this.p_top = 0
+                    };break;
+                    default:break;
+                }
+                var b_left = parseFloat(this.element.style.left.split("px")[0]) + this.p_left
+                var b_top = parseFloat(this.element.style.top.split("px")[0]) + this.p_top
+                console.log("p_left: " + this.p_left + " p_top: " +this.p_top  + "b_left: " + b_left + " b_top: " +b_top + " event.which: " + event.which);
+                $(this.element).velocity({
+                    left: b_left, top: b_top
+                },{
+                    duration:INIT_SPEED * this.size,
+                    easing:"linear",                
+                    progress:function () {
+                        for(let i=0;i<foods.length;i++){
+                            if(Food.isEat(Player, foods[i])){ //检测食物是否被球吃掉
+                                var overfood = new proto.Msg.Food();//声明食物结构体
+                                var clientMsg = new proto.Msg.ClientMessage(); //声明消息结构体
+
+                                overfood.setId(foods[i].id)
+                                clientMsg.setOrder(proto.Msg.ClientOrder.CLIENTORDER_FOOD_EAT)
+                                clientMsg.setFood(overfood)
+
+                                //console.log(clientMsg.toObject());
+                                var S = clientMsg.serializeBinary()//序列化
+                                ws.send(S)
+
+                                //ball.eat(foods[i]);
+                                foods[i].disappear();
+                                foods.splice(i,1);
+                                console.log(i + "号小球被吃");
+                            }
+                        }
+                    },
+                });
+                return true;
+            }else return false;
+        }
+
+        movebykey(){//移动
+            if($.cookie("playerName")==this.name){
+                $(this.element).velocity("stop");
+                switch (event.which){
+                    case 65:{ // ← 左 a
+                        console.log("A")
+                        this.p_left = -1000
+                    };break;
+                    case 87:{// 上 "W"
+                        console.log("W")
+                        this.p_top =  -1000
+                    };break;
+                    case 68:{// 右 "D"
+                        console.log("D")
+                        this.p_left = 1000
+                    };break;
+                    case 83:{// 下 "s"
+                        console.log("S")
+                        this.p_top = 1000
+                    };break;
+                    default:break;
+                }
+                var b_left = parseFloat(this.element.style.left.split("px")[0]) + this.p_left
+                var b_top = parseFloat(this.element.style.top.split("px")[0]) + this.p_top
+                console.log("p_left: " + this.p_left + " p_top: " +this.p_top  + "b_left: " + b_left + " b_top: " +b_top + " event.which: " + event.which);
+                $(this.element).velocity({
+                    left: b_left, top: b_top
+                },{
+                    duration:INIT_SPEED * this.size,
+                    easing:"linear",
+                    progress:function () {
+                        for(let i=0;i<foods.length;i++){
+                            if(Food.isEat(Player, foods[i])){ //检测食物是否被球吃掉
+                                var overfood = new proto.Msg.Food();//声明食物结构体
+                                var clientMsg = new proto.Msg.ClientMessage(); //声明消息结构体
+
+                                overfood.setId(foods[i].id)
+                                clientMsg.setOrder(proto.Msg.ClientOrder.CLIENTORDER_FOOD_EAT)
+                                clientMsg.setFood(overfood)
+
+                                var S = clientMsg.serializeBinary()//序列化
+                                ws.send(S)
+
+                                //ball.eat(foods[i]);
+                                foods[i].disappear();
+                                foods.splice(i,1);
+                                console.log(i + "号小球被吃");
+                            }
+                        }
+                    },
+                });
+                return true;
+            }else return false;
+        }
+
+        setSize(val){//设置大小
+            var change_size = parseFloat(val);
+            this.size = change_size;
+            this.element.style.width = change_size + "px";
+            this.element.style.height = change_size + "px";
+            this.element.style.lineHeight = change_size+"px";
+            this.element.style.fontSize = change_size/5+"px";
+        }
+        setPos(posx, posy){//设置位置
+            var change_posx = parseFloat(posx) * document.documentElement.clientWidth;
+            var change_posy = parseFloat(posy) * document.documentElement.clientHeight;
+            this.element.style.left = change_posx+"px";
+            this.element.style.top = change_posy+"px";
+        }
+
+        eat(food){
+            var change_size = parseFloat(this.size)+food.size*INCREASE_SPEED;
+            this.size = change_size;
+            this.element.style.width = change_size + "px";
+            this.element.style.height = change_size + "px";
+            this.element.style.lineHeight = change_size+"px";
+            this.element.style.fontSize = change_size/5+"px";
+        }
+
+        static Init(){
+            //初始化球 Ball
+            var color_index = INIT_COLOR; //默认颜色下标
+            var ball_div = document.createElement("div");
+            ball_div.setAttribute("class","ball");
+            ball_div.setAttribute("id","ball");
+            document.body.appendChild(ball_div);
+            var ball_div = document.body.lastChild;
+            return (new Ball(ball_div, INIT_SIZE, color_index, name));
+        }
+    }// end class Ball
+
+    //生成玩家 Player
+    Player = Ball.Init()
+
+    //随机玩家位置
+    Change_Ball_Pos(Math.random(), Math.random())
+    
+    //键盘控制运动
+    $(document).on("keydown",function () {
+        if(isDie==false){
+            Player.movebykey();
+        }else{
+            alert("You Die.");
+        }
+    });
+
+     //停止运动
+     $(document).on("keyup",function () {
+        if(isDie==false){
+            Player.stopbykey();
+        }else{
+            alert("You Die.");
+        }
+    });
+});
+
+
+/*
+    //鼠标移动指令
+    $(document).on("mousemove",function () {
+        if(isDie==false){
+            ball.move();
+        }else{
+            alert("You Die.");
+            $(document).unbind();
+        }
+    });
+    */
+       /*
+    //初始化食物
+    function FoodInit(){
+        for(let i=0;i<FOODS_NUM;i++){
+            makeFood(Math.random(),Math.random(),Math.random(),Math.random());
+        }
+    }
+
+    //开始初始化
+    FoodInit()
+
+    //JavaScript 计时事件
+    setInterval( function () {
+        if(foods.length < FOODS_NUM){
+            let num = FOODS_NUM - foods.length;
+            makeFood(Math.random(),Math.random(),Math.random(),Math.random());
+        }
+    },REFRESH_TIME*100);
+
+    
         move(){//移动
            if($.cookie("playerName")==this.name){
+
                 $(this.element).velocity("stop");
                 let left = event.pageX-(parseFloat(this.size)/2);
                 let top = event.pageY-(parseFloat(this.size)/2);
@@ -132,7 +343,7 @@ $(function () {
                                 overfood.setId(foods[i].id)
                                 clientMsg.setOrder(proto.Msg.ClientOrder.CLIENTORDER_FOOD_EAT)
                                 clientMsg.setFood(overfood)
-                                
+
                                 //console.log(clientMsg.toObject());
                                 var S = clientMsg.serializeBinary()//序列化
                                 ws.send(S)
@@ -143,55 +354,13 @@ $(function () {
                                 console.log(i + "号小球被吃");
                             }
                        }
-                       /*
-                       for (let i=0;i<bombs.length;i++){
-                           if(Bomb.isBoom(ball,bombs[i])){
-                               ball.boom(bombs[i]);
-                               bombs[i].disappear();
-                               bombs.splice(i,1);
-                           }
-                       }
-                       */
                     },
                 });
                 return true;
            }else return false;
-        }
-        setSize(val){//设置大小
-            var change_size = parseFloat(val);
-            this.size = change_size;
-            this.element.style.width = change_size + "px";
-            this.element.style.height = change_size + "px";
-            this.element.style.lineHeight = change_size+"px";
-            this.element.style.fontSize = change_size/5+"px";
-         }
-        eat(food){
-            var change_size = parseFloat(this.size)+food.size*INCREASE_SPEED;
-            this.size = change_size;
-            this.element.style.width = change_size + "px";
-            this.element.style.height = change_size + "px";
-            this.element.style.lineHeight = change_size+"px";
-            this.element.style.fontSize = change_size/5+"px";
-        }
-        boom(bomb){
-            $(this.element).velocity("stop");
-            let food_div = document.createElement("div");
-            food_div.setAttribute("class","food");
-            document.body.insertBefore(food_div,document.body.firstChild);
-            let px = window.getComputedStyle(this.element,null)["left"].split("px")[0];
-            let py = window.getComputedStyle(this.element,null)["top"].split("px")[0];
-            this.element.remove();
-            isDie = true;
-            let food = new Food(food_div,this.size,getColorIndex(this.bg),px,py);
-            foods.push(food);
-        }
-    }
+        }  
 
-
-
- 
-
-    //------------------------------------------------------------炸弹类
+            //------------------------------------------------------------炸弹类
     class Bomb{
         constructor(element, size, bg, posX, posY){
             this.element = element;
@@ -220,58 +389,12 @@ $(function () {
         }
     }
 
-    //-----------------------------------------------------------游戏设置
-
-    //获取姓名
-    if(name==null) {
-        name = prompt("Input Your Name", "");
-        $.cookie("playerName",name);
-    }
-
-    //初始化球 Ball
-    var color_index = INIT_COLOR;
-    var ball_div = document.createElement("div");
-    ball_div.setAttribute("class","ball");
-    ball_div.setAttribute("id","ball");
-    document.body.appendChild(ball_div);
-    var ball_div = document.body.lastChild;
-    var ball = new Ball(ball_div,INIT_SIZE,color_index,name);
-
-    /*
-    //初始化食物
-    function FoodInit(){
-        for(let i=0;i<FOODS_NUM;i++){
-            makeFood(Math.random(),Math.random(),Math.random(),Math.random());
+    function getColorIndex(color){
+        for (let i=0;i<FOODS_COLORS.length;i++){
+            if(FOODS_COLORS[i] == color){
+                return i;
+            }
         }
     }
 
-    //开始初始化
-    FoodInit()
-
-    //JavaScript 计时事件
-    setInterval( function () {
-        if(foods.length < FOODS_NUM){
-            let num = FOODS_NUM - foods.length;
-            makeFood(Math.random(),Math.random(),Math.random(),Math.random());
-        }
-    },REFRESH_TIME*100);
-    */
-
-
-    
-
-    //鼠标移动指令
-    $(document).on("mousemove",function () {
-        if(isDie==false){
-            ball.move();
-        }else{
-            alert("You Die.");
-            $(document).unbind();
-        }
-    });
-
-});
-
-function off(){
-    console.log("哈哈哈哈哈哈");
-}
+*/
