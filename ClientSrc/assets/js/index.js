@@ -8,7 +8,7 @@ INIT_COLOR = 5;                 // 小球默认颜色下标
 FOODS_NUM = 50;                 // 食物默认数量
 
 //玩家
-var Player 
+var PlayerSelf 
 
 const FOODS_COLORS = [
     "#FE9D01",
@@ -83,11 +83,11 @@ function makeFood(id, x, y, _bg, fs) {
 }
 
 function Change_Ball_Size(size){
-    Player.setSize(size)
+    PlayerSelf.setSize(size)
 }
 
 function Change_Ball_Pos(posx, posy){
-    Player.setPos(posx, posy)
+    PlayerSelf.setPos(posx, posy)
 }
 
 //开始设置
@@ -150,15 +150,16 @@ $(function () {
                     easing:"linear",                
                     progress:function () {
                         for(let i=0;i<foods.length;i++){
-                            if(Food.isEat(Player, foods[i])){ //检测食物是否被球吃掉
+                            if(Food.isEat(PlayerSelf, foods[i])){ //检测食物是否被球吃掉
                                 var overfood = new proto.Msg.Food();//声明食物结构体
-                                var clientMsg = new proto.Msg.ClientMessage(); //声明消息结构体
+                                var eatfoodMsg = new proto.Msg.EatFoodMsg(); //声明吃食物消息结构体
+                                var clientMsg = new proto.Msg.ClientMessage(); //声明客户端消息结构体
 
-                                overfood.setId(foods[i].id)
-                                clientMsg.setOrder(proto.Msg.ClientOrder.CLIENTORDER_FOOD_EAT)
-                                clientMsg.setFood(overfood)
+                                overfood.setId(foods[i].id)     //设置食物id
+                                eatfoodMsg.setFood(overfood)    //设置被吃食物信息
+                                clientMsg.setOrder(proto.Msg.ClientOrder.CLIENTORDER_FOOD_EAT) //设置吃食物指令
+                                clientMsg.setEatfoodmsg(eatfoodMsg) //设置客户端消息
 
-                                //console.log(clientMsg.toObject());
                                 var S = clientMsg.serializeBinary()//序列化
                                 ws.send(S)
 
@@ -206,13 +207,15 @@ $(function () {
                     easing:"linear",
                     progress:function () {
                         for(let i=0;i<foods.length;i++){
-                            if(Food.isEat(Player, foods[i])){ //检测食物是否被球吃掉
+                            if(Food.isEat(PlayerSelf, foods[i])){ //检测食物是否被球吃掉
                                 var overfood = new proto.Msg.Food();//声明食物结构体
+                                var eatfoodMsg = new proto.Msg.EatFoodMsg(); //声明吃食物消息结构体
                                 var clientMsg = new proto.Msg.ClientMessage(); //声明消息结构体
 
-                                overfood.setId(foods[i].id)
-                                clientMsg.setOrder(proto.Msg.ClientOrder.CLIENTORDER_FOOD_EAT)
-                                clientMsg.setFood(overfood)
+                                overfood.setId(foods[i].id)     //设置食物id
+                                eatfoodMsg.setFood(overfood)    //设置被吃食物信息
+                                clientMsg.setOrder(proto.Msg.ClientOrder.CLIENTORDER_FOOD_EAT) //设置吃食物指令
+                                clientMsg.setEatfoodmsg(eatfoodMsg) //设置客户端消息
 
                                 var S = clientMsg.serializeBinary()//序列化
                                 ws.send(S)
@@ -266,15 +269,15 @@ $(function () {
     }// end class Ball
 
     //生成玩家 Player
-    Player = Ball.Init()
+    PlayerSelf = Ball.Init()
 
     //随机玩家位置
-    Change_Ball_Pos(Math.random(), Math.random())
+    //Change_Ball_Pos(Math.random(), Math.random())
     
     //键盘控制运动
     $(document).on("keydown",function () {
         if(isDie==false){
-            Player.movebykey();
+            PlayerSelf.movebykey();
         }else{
             alert("You Die.");
         }
@@ -283,7 +286,7 @@ $(function () {
      //停止运动
      $(document).on("keyup",function () {
         if(isDie==false){
-            Player.stopbykey();
+            PlayerSelf.stopbykey();
         }else{
             alert("You Die.");
         }

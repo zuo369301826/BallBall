@@ -2,6 +2,14 @@ syntax = "proto3";
 
 package Msg;
 
+message Player{//玩家
+    int32 playerId = 1;
+    float posX = 2;
+    float posY = 3;
+    float bg = 4;
+    float size = 5; 
+};
+
 message Food{//食物
     int32 id = 1;
     float posX = 2;
@@ -10,36 +18,64 @@ message Food{//食物
     float size = 5; 
 };
 
+message Room{//玩家
+    int32  PLAYER_NUM = 1 ;      //玩家总数
+    repeated Player players = 2; //玩家信息
+};
+
 //服务器消息-----------------------------------------
 enum ServerOrder{
-    SERVERORDER_MAP_INIT = 0;   //地图初始化
-    SERVERORDER_MAP_UPDATE = 1; //更新地图食物
+    SERVERORDER_MAP_INIT = 0;       //地图初始化
+    SERVERORDER_MAP_UPDATE = 1;     //更新地图食物
+    SERVERORDER_PLAYER_SET = 2;     //初始化人物
+    SERVERORDER_ENEMY_UPDATE = 3;   //更新所有敌人
+    SERVERORDER_GAMEOVER = 4;       //游戏结束
 };
 
-message MapInit{//初始化地图
-    int32 FOODS_NUM = 1;//总数
-    repeated Food food = 2;//位置
+message MapInit{            //初始化地图 0
+    int32 FOODS_NUM = 1;    //总数
+    repeated Food food = 3; //食物位置
 };
 
-message Update{//更新地图
-    int32 food_id = 1;//要更新的食物id
-    Food food = 2;//新的食物信息
+message Update{             //更新地图 1
+    int32 food_id = 1;      //要更新的食物id
+    Food food = 2;          //新的食物信息
 };
 
-message ServerMessage{
+message PlayerSet{          //设置玩家信息 2
+    Player player = 3;      //玩家信息
+};
+
+message EnemyUpdata{         //更新所有敌人信息 3
+    int32  ENEMY_NUM = 1 ;      //敌人总数
+    repeated Player enemy = 2; //玩家信息
+};
+
+message ServerMessage{  //服务器消息
     ServerOrder order = 1;
     MapInit map = 2;
     Update update = 3;
+    PlayerSet playerset = 4; 
+    EnemyUpdata enemy = 5;
 };
 
 
 //客户端消息-----------------------------------------
-
 enum ClientOrder{
-    CLIENTORDER_FOOD_EAT = 0;   //地图初始化
+    CLIENTORDER_FOOD_EAT = 0;   //玩家吃食物
+    CLIENTORDER_ENEMY_EAT = 1;   //玩家吃敌人
+};
+
+message EatFoodMsg{     // 玩家吃食物消息 0
+    Food food = 1;
+};
+
+message EatEnemyMsg{    // 玩家吃敌人消息 1
+    Player player = 1;
 };
 
 message ClientMessage{
     ClientOrder order = 1;
-    Food food = 2;
+    EatFoodMsg eatfoodmsg = 2;
+    EatEnemyMsg eatenemymsg = 3;
 };

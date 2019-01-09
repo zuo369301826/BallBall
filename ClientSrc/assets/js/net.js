@@ -8,7 +8,7 @@ if ("WebSocket" in window){
 
    
    ws.onopen = function(){//连接成功
-      //alert("ok WebSocket!");
+      alert("ok WebSocket!");
    };
 
    //接受指令
@@ -28,7 +28,7 @@ if ("WebSocket" in window){
                FOODS_NUM = Map.getFoodsNum();//总量
                console.log(FOODS_NUM)
                var food = Map.getFoodList();
-               
+
               //生成食物
                for(i=0; i<FOODS_NUM; i++){
                   makeFood(food[i].array[0], food[i].array[1], food[i].array[2],  food[i].array[3], food[i].array[4]);
@@ -45,6 +45,17 @@ if ("WebSocket" in window){
                   console.log("地图更新成功");
                }// end  if (update != null)
             }// end  case SERVERORDER_MAP_UPDATE:
+
+            case proto.Msg.ServerOrder.SERVERORDER_PLAYER_SET:{//如果是设置玩家信息指令
+               var playerset = servermsg.getPlayerset();//获取设置消息
+               if (playerset != null){
+                  player = playerset.getPlayer();//获取玩家信息
+                  Change_Ball_Pos(player.getPosx(), player.getPosy())
+                  Change_Ball_Size(player.getSize())
+                  console.log("玩家初始化成功");
+               }// end   if (playerset != null){
+            }// end  case SERVERORDER_PLAYER_SET
+
          } //end switch
       }// end reader.onload = function (e)
    };
