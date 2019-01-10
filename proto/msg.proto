@@ -56,7 +56,7 @@ message ServerMessage{  //服务器消息
     MapInit map = 2;
     Update update = 3;
     PlayerSet playerset = 4; 
-    EnemyUpdata enemy = 5;
+    EnemyUpdata enemysmsg = 5;
 };
 
 
@@ -64,6 +64,7 @@ message ServerMessage{  //服务器消息
 enum ClientOrder{
     CLIENTORDER_FOOD_EAT = 0;   //玩家吃食物
     CLIENTORDER_ENEMY_EAT = 1;   //玩家吃敌人
+    CLIENTORDER_DATA_FRAME = 2;   //客户端数据帧
 };
 
 message EatFoodMsg{     // 玩家吃食物消息 0
@@ -74,8 +75,13 @@ message EatEnemyMsg{    // 玩家吃敌人消息 1
     Player player = 1;
 };
 
+message ClientDataFrame{ // 客户端数据帧 2
+    Player player = 1; // 玩家当前信息
+}
+
 message ClientMessage{
     ClientOrder order = 1;
     EatFoodMsg eatfoodmsg = 2;
     EatEnemyMsg eatenemymsg = 3;
+    ClientDataFrame clientdataframe = 4;
 };

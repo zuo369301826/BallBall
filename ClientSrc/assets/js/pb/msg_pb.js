@@ -11,6 +11,7 @@ var jspb = require('google-protobuf');
 var goog = jspb;
 var global = Function('return this')();
 
+goog.exportSymbol('proto.Msg.ClientDataFrame', null, global);
 goog.exportSymbol('proto.Msg.ClientMessage', null, global);
 goog.exportSymbol('proto.Msg.ClientOrder', null, global);
 goog.exportSymbol('proto.Msg.EatEnemyMsg', null, global);
@@ -1505,7 +1506,7 @@ proto.Msg.ServerMessage.toObject = function(includeInstance, msg) {
     map: (f = msg.getMap()) && proto.Msg.MapInit.toObject(includeInstance, f),
     update: (f = msg.getUpdate()) && proto.Msg.Update.toObject(includeInstance, f),
     playerset: (f = msg.getPlayerset()) && proto.Msg.PlayerSet.toObject(includeInstance, f),
-    enemy: (f = msg.getEnemy()) && proto.Msg.EnemyUpdata.toObject(includeInstance, f)
+    enemysmsg: (f = msg.getEnemysmsg()) && proto.Msg.EnemyUpdata.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -1564,7 +1565,7 @@ proto.Msg.ServerMessage.deserializeBinaryFromReader = function(msg, reader) {
     case 5:
       var value = new proto.Msg.EnemyUpdata;
       reader.readMessage(value,proto.Msg.EnemyUpdata.deserializeBinaryFromReader);
-      msg.setEnemy(value);
+      msg.setEnemysmsg(value);
       break;
     default:
       reader.skipField();
@@ -1626,7 +1627,7 @@ proto.Msg.ServerMessage.serializeBinaryToWriter = function(message, writer) {
       proto.Msg.PlayerSet.serializeBinaryToWriter
     );
   }
-  f = message.getEnemy();
+  f = message.getEnemysmsg();
   if (f != null) {
     writer.writeMessage(
       5,
@@ -1743,23 +1744,23 @@ proto.Msg.ServerMessage.prototype.hasPlayerset = function() {
 
 
 /**
- * optional EnemyUpdata enemy = 5;
+ * optional EnemyUpdata enemysmsg = 5;
  * @return {?proto.Msg.EnemyUpdata}
  */
-proto.Msg.ServerMessage.prototype.getEnemy = function() {
+proto.Msg.ServerMessage.prototype.getEnemysmsg = function() {
   return /** @type{?proto.Msg.EnemyUpdata} */ (
     jspb.Message.getWrapperField(this, proto.Msg.EnemyUpdata, 5));
 };
 
 
 /** @param {?proto.Msg.EnemyUpdata|undefined} value */
-proto.Msg.ServerMessage.prototype.setEnemy = function(value) {
+proto.Msg.ServerMessage.prototype.setEnemysmsg = function(value) {
   jspb.Message.setWrapperField(this, 5, value);
 };
 
 
-proto.Msg.ServerMessage.prototype.clearEnemy = function() {
-  this.setEnemy(undefined);
+proto.Msg.ServerMessage.prototype.clearEnemysmsg = function() {
+  this.setEnemysmsg(undefined);
 };
 
 
@@ -1767,7 +1768,7 @@ proto.Msg.ServerMessage.prototype.clearEnemy = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.Msg.ServerMessage.prototype.hasEnemy = function() {
+proto.Msg.ServerMessage.prototype.hasEnemysmsg = function() {
   return jspb.Message.getField(this, 5) != null;
 };
 
@@ -2101,6 +2102,165 @@ proto.Msg.EatEnemyMsg.prototype.hasPlayer = function() {
  * @extends {jspb.Message}
  * @constructor
  */
+proto.Msg.ClientDataFrame = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.Msg.ClientDataFrame, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.Msg.ClientDataFrame.displayName = 'proto.Msg.ClientDataFrame';
+}
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.Msg.ClientDataFrame.prototype.toObject = function(opt_includeInstance) {
+  return proto.Msg.ClientDataFrame.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.Msg.ClientDataFrame} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.Msg.ClientDataFrame.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    player: (f = msg.getPlayer()) && proto.Msg.Player.toObject(includeInstance, f)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.Msg.ClientDataFrame}
+ */
+proto.Msg.ClientDataFrame.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.Msg.ClientDataFrame;
+  return proto.Msg.ClientDataFrame.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.Msg.ClientDataFrame} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.Msg.ClientDataFrame}
+ */
+proto.Msg.ClientDataFrame.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = new proto.Msg.Player;
+      reader.readMessage(value,proto.Msg.Player.deserializeBinaryFromReader);
+      msg.setPlayer(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.Msg.ClientDataFrame.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.Msg.ClientDataFrame.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.Msg.ClientDataFrame} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.Msg.ClientDataFrame.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getPlayer();
+  if (f != null) {
+    writer.writeMessage(
+      1,
+      f,
+      proto.Msg.Player.serializeBinaryToWriter
+    );
+  }
+};
+
+
+/**
+ * optional Player player = 1;
+ * @return {?proto.Msg.Player}
+ */
+proto.Msg.ClientDataFrame.prototype.getPlayer = function() {
+  return /** @type{?proto.Msg.Player} */ (
+    jspb.Message.getWrapperField(this, proto.Msg.Player, 1));
+};
+
+
+/** @param {?proto.Msg.Player|undefined} value */
+proto.Msg.ClientDataFrame.prototype.setPlayer = function(value) {
+  jspb.Message.setWrapperField(this, 1, value);
+};
+
+
+proto.Msg.ClientDataFrame.prototype.clearPlayer = function() {
+  this.setPlayer(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.Msg.ClientDataFrame.prototype.hasPlayer = function() {
+  return jspb.Message.getField(this, 1) != null;
+};
+
+
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
 proto.Msg.ClientMessage = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
@@ -2139,7 +2299,8 @@ proto.Msg.ClientMessage.toObject = function(includeInstance, msg) {
   var f, obj = {
     order: jspb.Message.getFieldWithDefault(msg, 1, 0),
     eatfoodmsg: (f = msg.getEatfoodmsg()) && proto.Msg.EatFoodMsg.toObject(includeInstance, f),
-    eatenemymsg: (f = msg.getEatenemymsg()) && proto.Msg.EatEnemyMsg.toObject(includeInstance, f)
+    eatenemymsg: (f = msg.getEatenemymsg()) && proto.Msg.EatEnemyMsg.toObject(includeInstance, f),
+    clientdataframe: (f = msg.getClientdataframe()) && proto.Msg.ClientDataFrame.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -2189,6 +2350,11 @@ proto.Msg.ClientMessage.deserializeBinaryFromReader = function(msg, reader) {
       var value = new proto.Msg.EatEnemyMsg;
       reader.readMessage(value,proto.Msg.EatEnemyMsg.deserializeBinaryFromReader);
       msg.setEatenemymsg(value);
+      break;
+    case 4:
+      var value = new proto.Msg.ClientDataFrame;
+      reader.readMessage(value,proto.Msg.ClientDataFrame.deserializeBinaryFromReader);
+      msg.setClientdataframe(value);
       break;
     default:
       reader.skipField();
@@ -2240,6 +2406,14 @@ proto.Msg.ClientMessage.serializeBinaryToWriter = function(message, writer) {
       3,
       f,
       proto.Msg.EatEnemyMsg.serializeBinaryToWriter
+    );
+  }
+  f = message.getClientdataframe();
+  if (f != null) {
+    writer.writeMessage(
+      4,
+      f,
+      proto.Msg.ClientDataFrame.serializeBinaryToWriter
     );
   }
 };
@@ -2321,6 +2495,36 @@ proto.Msg.ClientMessage.prototype.hasEatenemymsg = function() {
 
 
 /**
+ * optional ClientDataFrame clientdataframe = 4;
+ * @return {?proto.Msg.ClientDataFrame}
+ */
+proto.Msg.ClientMessage.prototype.getClientdataframe = function() {
+  return /** @type{?proto.Msg.ClientDataFrame} */ (
+    jspb.Message.getWrapperField(this, proto.Msg.ClientDataFrame, 4));
+};
+
+
+/** @param {?proto.Msg.ClientDataFrame|undefined} value */
+proto.Msg.ClientMessage.prototype.setClientdataframe = function(value) {
+  jspb.Message.setWrapperField(this, 4, value);
+};
+
+
+proto.Msg.ClientMessage.prototype.clearClientdataframe = function() {
+  this.setClientdataframe(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.Msg.ClientMessage.prototype.hasClientdataframe = function() {
+  return jspb.Message.getField(this, 4) != null;
+};
+
+
+/**
  * @enum {number}
  */
 proto.Msg.ServerOrder = {
@@ -2336,7 +2540,8 @@ proto.Msg.ServerOrder = {
  */
 proto.Msg.ClientOrder = {
   CLIENTORDER_FOOD_EAT: 0,
-  CLIENTORDER_ENEMY_EAT: 1
+  CLIENTORDER_ENEMY_EAT: 1,
+  CLIENTORDER_DATA_FRAME: 2
 };
 
 goog.object.extend(exports, proto.Msg);

@@ -6,9 +6,15 @@ const DEFAULT_FOOD_SIZE = 15;   // 食物默认大小(IS_SAME_SIZE为true时有�
 
 INIT_COLOR = 5;                 // 小球默认颜色下标
 FOODS_NUM = 50;                 // 食物默认数量
+ENEMY_NUM = 0;                  //敌人数量
+
+ISINIT = true
 
 //玩家
-var PlayerSelf 
+var PlayerSelf; 
+
+//敌人
+var Enemys = [];
 
 const FOODS_COLORS = [
     "#FE9D01",
@@ -28,6 +34,60 @@ const FOODS_COLORS = [
 ];
 
 
+//------------------------------------------------------------敌人类
+class Enemy{
+    constructor(element, id,  size, bg, posX, posY){
+        this.element = element;
+        this.size = size;
+        this.id = id;
+        this.bg = FOODS_COLORS[bg];
+        this.posX = posX;
+        this.posY = posY;
+        this.element.style.width = size+"px";
+        this.element.style.height = size+"px";
+        this.element.style.background = this.bg;
+        this.element.style.left = posX+"px";
+        this.element.style.top = posY+"px";
+    }
+    disappear(){
+        this.element.remove();
+    }
+    static isEatenemy(ball, enemy){
+        var enemySIZE = enemy.size;
+        var ballX = parseFloat(ball.element.style.left.split("px")[0])+ballSIZE/2;
+        var ballY = parseFloat(ball.element.style.top.split("px")[0])+ballSIZE/2;
+        var length = Math.sqrt(Math.pow((parseFloat(enemy.posX) + enemy.size/2 - ballX),2) + Math.pow((parseFloat(enemy.posY) + enemy.size/2 - ballY),2));
+        if(length<(parseFloat(ballSIZE)-enemySIZE)/2) {
+            return true;
+        }
+        else return false;
+    }
+}// end class enemy
+
+function makeEnemy(id, x, y, _bg, fs) {
+    var enemy_div = document.createElement("div");
+    enemy_div.setAttribute("class","food");
+    enemy_div.setAttribute("id", id);
+    document.body.insertBefore(enemy_div,document.body.firstChild);
+    let size = fs;
+    let bg = parseInt(_bg*(FOODS_COLORS.length-1));
+    //let pos_x = x * document.documentElement.clientWidth;
+    //let pos_y = y * document.documentElement.clientHeight;
+    let pos_x = x
+    let pos_y = y
+    var enemy = new Enemy(enemy_div, id, size, bg, pos_x, pos_y);
+    Enemys.push(enemy);
+}
+
+function cleanEnemy(){
+    for (index=0; index<ENEMY_NUM; index++){
+        console.log(index + " " + Enemys + ENEMY_NUM)
+        Enemys[index].disappear()
+    }
+    Enemys = []
+}
+
+
 
 
 //------------------------------------------------------------食物类
@@ -45,9 +105,6 @@ class Food{
         this.element.style.left = posX+"px";
         this.element.style.top = posY+"px";
     }
-    disappear(){
-        this.element.remove();
-    }
     static isEat(ball,food){
         var ballSIZE = ball.size;
         var ballX = parseFloat(ball.element.style.left.split("px")[0])+ballSIZE/2;
@@ -57,6 +114,9 @@ class Food{
             return true;
         }
         else return false;
+    }
+    disappear(){
+        this.element.remove();
     }
 }// end class Food
 
@@ -87,8 +147,12 @@ function Change_Ball_Size(size){
 }
 
 function Change_Ball_Pos(posx, posy){
-    PlayerSelf.setPos(posx, posy)
+    PlayerSelf.PosInit(posx, posy)
 }
+
+var overfood = new proto.Msg.Food();//声明食物结构体
+var eatfoodMsg = new proto.Msg.EatFoodMsg(); //声明吃食物消息结构体
+var clientMsg = new proto.Msg.ClientMessage(); //声明客户端消息结构体
 
 //开始设置
 $(function () {
@@ -151,9 +215,6 @@ $(function () {
                     progress:function () {
                         for(let i=0;i<foods.length;i++){
                             if(Food.isEat(PlayerSelf, foods[i])){ //检测食物是否被球吃掉
-                                var overfood = new proto.Msg.Food();//声明食物结构体
-                                var eatfoodMsg = new proto.Msg.EatFoodMsg(); //声明吃食物消息结构体
-                                var clientMsg = new proto.Msg.ClientMessage(); //声明客户端消息结构体
 
                                 overfood.setId(foods[i].id)     //设置食物id
                                 eatfoodMsg.setFood(overfood)    //设置被吃食物信息
@@ -208,9 +269,6 @@ $(function () {
                     progress:function () {
                         for(let i=0;i<foods.length;i++){
                             if(Food.isEat(PlayerSelf, foods[i])){ //检测食物是否被球吃掉
-                                var overfood = new proto.Msg.Food();//声明食物结构体
-                                var eatfoodMsg = new proto.Msg.EatFoodMsg(); //声明吃食物消息结构体
-                                var clientMsg = new proto.Msg.ClientMessage(); //声明消息结构体
 
                                 overfood.setId(foods[i].id)     //设置食物id
                                 eatfoodMsg.setFood(overfood)    //设置被吃食物信息
@@ -240,21 +298,18 @@ $(function () {
             this.element.style.lineHeight = change_size+"px";
             this.element.style.fontSize = change_size/5+"px";
         }
-        setPos(posx, posy){//设置位置
-            var change_posx = parseFloat(posx) * document.documentElement.clientWidth;
+        PosInit(posx, posy){//初始化位置
+            var change_posx =  parseFloat(posx) * document.documentElement.clientWidth;
             var change_posy = parseFloat(posy) * document.documentElement.clientHeight;
             this.element.style.left = change_posx+"px";
             this.element.style.top = change_posy+"px";
         }
-
-        eat(food){
-            var change_size = parseFloat(this.size)+food.size*INCREASE_SPEED;
-            this.size = change_size;
-            this.element.style.width = change_size + "px";
-            this.element.style.height = change_size + "px";
-            this.element.style.lineHeight = change_size+"px";
-            this.element.style.fontSize = change_size/5+"px";
+        setPos(posx, posy){//设置位置
+            this.element.style.left = posx+"px";
+            this.element.style.top = posy+"px";            
         }
+
+
 
         static Init(){
             //初始化球 Ball
@@ -273,6 +328,8 @@ $(function () {
 
     //随机玩家位置
     //Change_Ball_Pos(Math.random(), Math.random())
+
+
     
     //键盘控制运动
     $(document).on("keydown",function () {
@@ -362,6 +419,15 @@ $(function () {
                 return true;
            }else return false;
         }  
+
+        eat(food){
+            var change_size = parseFloat(this.size)+food.size*INCREASE_SPEED;
+            this.size = change_size;
+            this.element.style.width = change_size + "px";
+            this.element.style.height = change_size + "px";
+            this.element.style.lineHeight = change_size+"px";
+            this.element.style.fontSize = change_size/5+"px";
+        }        
 
             //------------------------------------------------------------炸弹类
     class Bomb{
