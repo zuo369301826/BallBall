@@ -58,6 +58,18 @@ if ("WebSocket" in window){
                var update = servermsg.getUpdate();
                if (update != null){
                   var id = update.getFoodId();
+                  //document.getElementById(id)
+
+                  //删除小球
+                  for(index=0; index<FOODS_NUM; index++){
+                     if(foods[index] && foods[index].id == id){
+                        console.log("foodid"+foods[index].id+ "id"+ id)
+                        foods[index].disappear();
+                        foods.splice(index,1); 
+                        break;
+                     }                    
+                  }
+
                   var food = update.getFood();
                   makeFood(id, food.array[1], food.array[2],  food.array[3], food.array[4]);
                   console.log("地图更新成功");

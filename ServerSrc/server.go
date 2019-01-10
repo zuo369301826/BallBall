@@ -13,11 +13,37 @@ import (
 	"golang.org/x/net/websocket"
 )
 
+// Hub 集线器
+type Hub struct {
+	num int32
+	WSs []*websocket.Conn
+}
+
+var hub Hub
+
+// Add 添加端口
+func (hub *Hub) Add(ws *websocket.Conn) {
+	hub.WSs = append(hub.WSs, ws)
+	hub.num++
+}
+
+//Delete 端口
+func (hub *Hub) Delete(ws *websocket.Conn) {
+	hub.num--
+	var index int32
+	for ; index < hub.num; index++ {
+		if hub.WSs[index] == ws {
+			hub.WSs = append(hub.WSs[:index], hub.WSs[index+1:]...)
+		}
+	}
+}
+
 const (
 	// INITSIZE 玩家初始大小
 	INITSIZE = 60
 )
 
+//随机数种子
 var rand1 = rand.New(rand.NewSource(time.Now().UnixNano()))
 
 // RandbyRand 随机数生成器
@@ -81,7 +107,7 @@ func SendMapInitOrder(ws *websocket.Conn) {
 }
 
 // SendMapUpdateOrder 发送更新地图食物指令
-func SendMapUpdateOrder(ws *websocket.Conn, foodid int32) {
+func SendMapUpdateOrder(foodid int32) {
 
 	//更新食物信息
 	TMap.Food[foodid].PosX = rand1.Float32()
@@ -105,11 +131,16 @@ func SendMapUpdateOrder(ws *websocket.Conn, foodid int32) {
 		return
 	}
 
-	//发送数据
-	if err := websocket.Message.Send(ws, pData); err != nil {
-		fmt.Println("websocket.Message.Send(ws, pData)")
-		return
+	//给所有的客户端发送数据
+	var index int32
+	for ; index < hub.num; index++ {
+		fmt.Print("*")
+		if err := websocket.Message.Send(hub.WSs[index], pData); err != nil {
+			fmt.Println("websocket.Message.Send(ws, pData)")
+			return
+		}
 	}
+	fmt.Println("")
 
 	fmt.Println("MapUpData")
 }
@@ -203,7 +234,7 @@ func ReadClientMessage(ws *websocket.Conn, wg *sync.WaitGroup, id int, playerID 
 				overid := overfood.GetId()       //获取id
 				fmt.Println(clientMsg, overid, "号食物消失")
 				SendPlayerUpdateOrder(ws, overid, playerID) //发送玩家信息更新指令
-				SendMapUpdateOrder(ws, overid)              //发送地图更新指令
+				SendMapUpdateOrder(overid)                  //发送地图更新指令给所有客户端
 			}
 
 		case Msg.ClientOrder_CLIENTORDER_DATA_FRAME: //客户端数据包
@@ -220,7 +251,6 @@ func ReadClientMessage(ws *websocket.Conn, wg *sync.WaitGroup, id int, playerID 
 					}
 				}
 			}
-
 		} // end switch clientMsg.Order
 
 	} // end for {
@@ -282,6 +312,10 @@ func SendPlayerInitMsg(ws *websocket.Conn) {
 
 // serverHandler 服务器任务
 func serverHandler(ws *websocket.Conn) {
+
+	//设置集线器
+	hub.Add(ws)
+	defer hub.Delete(ws)
 
 	// SendMapInitOrder 发送初始化地图指令
 	SendMapInitOrder(ws)
