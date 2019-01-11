@@ -53,11 +53,11 @@ class Enemy{
         this.element.remove();
     }
     static isEatenemy(ball, enemy){
-        var enemySIZE = enemy.size;
+        var ballSIZE = ball.size;
         var ballX = parseFloat(ball.element.style.left.split("px")[0])+ballSIZE/2;
         var ballY = parseFloat(ball.element.style.top.split("px")[0])+ballSIZE/2;
         var length = Math.sqrt(Math.pow((parseFloat(enemy.posX) + enemy.size/2 - ballX),2) + Math.pow((parseFloat(enemy.posY) + enemy.size/2 - ballY),2));
-        if(length<(parseFloat(ballSIZE)-enemySIZE)/2) {
+        if(length<(parseFloat(ballSIZE)-enemy.size)/2) {
             return true;
         }
         else return false;
@@ -150,13 +150,13 @@ function Change_Ball_Pos(posx, posy){
 
 var overfood = new proto.Msg.Food();//声明食物结构体
 var eatfoodMsg = new proto.Msg.EatFoodMsg(); //声明吃食物消息结构体
-var overenemy = new proto.Msg.Player();//声明食物结构体
-var eatenemyMsg = new proto.Msg.EatEnemyMsg(); //声明吃食物消息结构体
 var clientMsg = new proto.Msg.ClientMessage(); //声明客户端消息结构体
 
 function BallEat() {
     for(let i=0;i<foods.length;i++){
         if(Food.isEat(PlayerSelf, foods[i])){ //检测食物是否被球吃掉
+
+            var clientMsg = new proto.Msg.ClientMessage(); //声明客户端消息结构体
 
             overfood.setId(foods[i].id)     //设置食物id
             eatfoodMsg.setFood(overfood)    //设置被吃食物信息
@@ -171,23 +171,28 @@ function BallEat() {
             //console.log(i + "号小球被吃");
         }
     }
-/*
+
+    //检测敌人是否被吃
     for(let i=0;i<ENEMY_NUM;i++){
-        if(Enemy.isEatenemy(PlayerSelf, Enemys[i])){ //检测食物是否被球吃掉
-            overfood.setId(foods[i].id)     //设置敌人id
-            eatfoodMsg.setFood(overfood)    //设置被吃食物信息
-            clientMsg.setOrder(proto.Msg.ClientOrder.CLIENTORDER_FOOD_EAT) //设置吃食物指令
-            clientMsg.setEatfoodmsg(eatfoodMsg) //设置客户端消息
+        if(Enemy.isEatenemy(PlayerSelf, Enemys[i])){ //检测敌人是否被球吃掉
+
+            var overenemy = new proto.Msg.Player();//声明食物结构体
+            var eatenemyMsg = new proto.Msg.EatEnemyMsg(); //声明吃食物消息结构体
+            var clientMsg = new proto.Msg.ClientMessage(); //声明客户端消息结构体
+
+            overenemy.setPlayerid(Enemys[i].id)     //设置敌人id
+            eatenemyMsg.setPlayer(overenemy)    //设置吃敌人协议
+            clientMsg.setOrder(proto.Msg.ClientOrder.CLIENTORDER_ENEMY_EAT) //设置吃敌人指令
+            clientMsg.setEatenemymsg(eatenemyMsg) //设置客户端消息
 
             var S = clientMsg.serializeBinary()//序列化
             ws.send(S)
 
-            foods[i].disappear();
-            foods.splice(i,1);
-            //console.log(i + "号小球被吃");
+            Enemys[i].disappear();
+            //Enemys.splice(i,1);
+            //console.log(i + "号敌人被吃");
         }
     }
-    */
 }
 
 //开始设置

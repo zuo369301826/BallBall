@@ -44,6 +44,7 @@ if ("WebSocket" in window){
             case proto.Msg.ServerOrder.SERVERORDER_MAP_INIT:{//如果是初始化指令
                var Map = servermsg.getMap();
                FOODS_NUM = Map.getFoodsNum();//总量
+               
                //console.log(FOODS_NUM)
                var food = Map.getFoodList();
 
