@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"math/rand"
 	"net/http"
 	"sync"
@@ -25,17 +26,20 @@ var hub Hub
 func (hub *Hub) Add(ws *websocket.Conn) {
 	hub.WSs = append(hub.WSs, ws)
 	hub.num++
+	log.Println(hub)
 }
 
 //Delete 端口
 func (hub *Hub) Delete(ws *websocket.Conn) {
-	hub.num--
+
 	var index int32
 	for ; index < hub.num; index++ {
 		if hub.WSs[index] == ws {
 			hub.WSs = append(hub.WSs[:index], hub.WSs[index+1:]...)
 		}
 	}
+	hub.num--
+	log.Println(hub)
 }
 
 const (
@@ -102,7 +106,6 @@ func SendMapInitOrder(ws *websocket.Conn) {
 		fmt.Println("websocket.Message.Send(ws, pData)")
 		return
 	}
-
 	fmt.Println("MapInit")
 }
 
@@ -134,20 +137,19 @@ func SendMapUpdateOrder(foodid int32) {
 	//给所有的客户端发送数据
 	var index int32
 	for ; index < hub.num; index++ {
-		fmt.Print("*")
 		if err := websocket.Message.Send(hub.WSs[index], pData); err != nil {
-			fmt.Println("websocket.Message.Send(ws, pData)")
-			return
+			log.Fatalln(hub)
+			fmt.Println(index)
+			fmt.Println(hub.WSs[index])
+			panic(err)
+			//fmt.Println("SendMapUpdateOrder websocket.Message.Send(ws, pData)")
 		}
 	}
-	fmt.Println("")
-
 	fmt.Println("MapUpData")
 }
 
 // SendPlayerUpdateOrder 发送更新玩家信息的指令
 func SendPlayerUpdateOrder(ws *websocket.Conn, foodid int32, playerID int32) {
-
 	eatfoodsize := TMap.Food[foodid].Size
 	var index int32
 	for ; index < playernum; index++ {
@@ -159,17 +161,15 @@ func SendPlayerUpdateOrder(ws *websocket.Conn, foodid int32, playerID int32) {
 			servermsg.Order = Msg.ServerOrder_SERVERORDER_PLAYER_SET //设置服务器命令
 			servermsg.Playerset = playerset                          //设置内容
 
-			fmt.Println(Room.Players[index].PosX)
-
 			//序列化
 			pData, err := proto.Marshal(servermsg)
 			if err != nil {
-				fmt.Println("序列化错误")
+				log.Fatalln("序列化错误", err)
 			}
 
 			//发送数据
 			if err := websocket.Message.Send(ws, pData); err != nil {
-				fmt.Println("websocket.Message.Send(ws, pData)")
+				log.Fatalln("SendPlayerUpdateOrder websocket.Message.Send(ws, pData):", err)
 				return
 			}
 			break
@@ -202,7 +202,6 @@ func SendEnemyDataOrder(ws *websocket.Conn, playerID int32) {
 	if err := websocket.Message.Send(ws, pData); err != nil {
 		fmt.Println("err := websocket.Message.Send(ws, pData)")
 	}
-
 	fmt.Println(playerID, "敌人更新成功")
 }
 
@@ -252,7 +251,6 @@ func ReadClientMessage(ws *websocket.Conn, wg *sync.WaitGroup, id int, playerID 
 				}
 			}
 		} // end switch clientMsg.Order
-
 	} // end for {
 }
 
@@ -336,6 +334,8 @@ func serverHandler(ws *websocket.Conn) {
 }
 
 func main() {
+
+	log.SetFlags(log.LstdFlags | log.Lshortfile | log.Lmicroseconds)
 
 	http.Handle("/", websocket.Handler(serverHandler))
 

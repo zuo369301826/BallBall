@@ -15,7 +15,7 @@ if ("WebSocket" in window){
    ws.onopen = function(){//连接成功
       alert("ok WebSocket!");
       
-      //JavaScript 计时事件 100ms 发送数据帧
+      //JavaScript 计时事件 20ms 发送数据帧
       setInterval( function () {
          var X = PlayerSelf.element.getBoundingClientRect().left+document.documentElement.scrollLeft; 
          var Y = PlayerSelf.element.getBoundingClientRect().top+document.documentElement.scrollTop;
@@ -44,7 +44,7 @@ if ("WebSocket" in window){
             case proto.Msg.ServerOrder.SERVERORDER_MAP_INIT:{//如果是初始化指令
                var Map = servermsg.getMap();
                FOODS_NUM = Map.getFoodsNum();//总量
-               console.log(FOODS_NUM)
+               //console.log(FOODS_NUM)
                var food = Map.getFoodList();
 
               //生成食物
@@ -63,7 +63,7 @@ if ("WebSocket" in window){
                   //删除小球
                   for(index=0; index<FOODS_NUM; index++){
                      if(foods[index] && foods[index].id == id){
-                        console.log("foodid"+foods[index].id+ "id"+ id)
+                        //console.log("foodid"+foods[index].id+ "id"+ id)
                         foods[index].disappear();
                         foods.splice(index,1); 
                         break;
@@ -72,7 +72,7 @@ if ("WebSocket" in window){
 
                   var food = update.getFood();
                   makeFood(id, food.array[1], food.array[2],  food.array[3], food.array[4]);
-                  console.log("地图更新成功");
+                  //console.log("地图更新成功");
                }// end  if (update != null)
             }// end  case SERVERORDER_MAP_UPDATE:
 
@@ -80,14 +80,14 @@ if ("WebSocket" in window){
                var playerset = servermsg.getPlayerset();//获取设置消息
                if (playerset != null){
                   var player = playerset.getPlayer();//获取玩家信息
-                  console.log(PlayerSelf.element.getBoundingClientRect().left+document.documentElement.scrollLeft)
+                  //console.log(PlayerSelf.element.getBoundingClientRect().left+document.documentElement.scrollLeft)
                   if(ISINIT){
                      Change_Ball_Pos(player.getPosx(), player.getPosy())
                      ISINIT = false
                   }
                   Change_Ball_Size(player.getSize())
-                  console.log(PlayerSelf.element.getBoundingClientRect().left+document.documentElement.scrollLeft)
-                  console.log("玩家初始化成功");
+                  //console.log(PlayerSelf.element.getBoundingClientRect().left+document.documentElement.scrollLeft)
+                  //console.log("玩家初始化成功");
                }// end   if (playerset != null){
             }// end  case SERVERORDER_PLAYER_SET
 
@@ -99,9 +99,9 @@ if ("WebSocket" in window){
                   var enemys = msg.getEnemyList()
                   for(index=0;index<ENEMY_NUM;index++){
                      makeEnemy(enemys[index].array[0], enemys[index].array[1],enemys[index].array[2],enemys[index].array[3],enemys[index].array[4])
-                     console.log(enemys[index].array[0]+" "+ enemys[index].array[1]+" "+ enemys[index].array[2]+" "+ enemys[index].array[3]+" "+ enemys[index].array[4])
+                     //console.log(enemys[index].array[0]+" "+ enemys[index].array[1]+" "+ enemys[index].array[2]+" "+ enemys[index].array[3]+" "+ enemys[index].array[4])
                   }
-                  console.log("敌人更新成功")
+                  //console.log("敌人更新成功")
                }// end  if (msg != null){
             }// end  case SERVERORDER_ENEMY_UPDATE
 

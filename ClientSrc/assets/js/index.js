@@ -71,8 +71,6 @@ function makeEnemy(id, x, y, _bg, fs) {
     document.body.insertBefore(enemy_div,document.body.firstChild);
     let size = fs;
     let bg = parseInt(_bg*(FOODS_COLORS.length-1));
-    //let pos_x = x * document.documentElement.clientWidth;
-    //let pos_y = y * document.documentElement.clientHeight;
     let pos_x = x
     let pos_y = y
     var enemy = new Enemy(enemy_div, id, size, bg, pos_x, pos_y);
@@ -81,7 +79,7 @@ function makeEnemy(id, x, y, _bg, fs) {
 
 function cleanEnemy(){
     for (index=0; index<ENEMY_NUM; index++){
-        console.log(index + " " + Enemys + ENEMY_NUM)
+        //console.log(index + " " + Enemys + ENEMY_NUM)
         Enemys[index].disappear()
     }
     Enemys = []
@@ -152,7 +150,45 @@ function Change_Ball_Pos(posx, posy){
 
 var overfood = new proto.Msg.Food();//声明食物结构体
 var eatfoodMsg = new proto.Msg.EatFoodMsg(); //声明吃食物消息结构体
+var overenemy = new proto.Msg.Player();//声明食物结构体
+var eatenemyMsg = new proto.Msg.EatEnemyMsg(); //声明吃食物消息结构体
 var clientMsg = new proto.Msg.ClientMessage(); //声明客户端消息结构体
+
+function BallEat() {
+    for(let i=0;i<foods.length;i++){
+        if(Food.isEat(PlayerSelf, foods[i])){ //检测食物是否被球吃掉
+
+            overfood.setId(foods[i].id)     //设置食物id
+            eatfoodMsg.setFood(overfood)    //设置被吃食物信息
+            clientMsg.setOrder(proto.Msg.ClientOrder.CLIENTORDER_FOOD_EAT) //设置吃食物指令
+            clientMsg.setEatfoodmsg(eatfoodMsg) //设置客户端消息
+
+            var S = clientMsg.serializeBinary()//序列化
+            ws.send(S)
+
+            foods[i].disappear();
+            foods.splice(i,1);
+            //console.log(i + "号小球被吃");
+        }
+    }
+/*
+    for(let i=0;i<ENEMY_NUM;i++){
+        if(Enemy.isEatenemy(PlayerSelf, Enemys[i])){ //检测食物是否被球吃掉
+            overfood.setId(foods[i].id)     //设置敌人id
+            eatfoodMsg.setFood(overfood)    //设置被吃食物信息
+            clientMsg.setOrder(proto.Msg.ClientOrder.CLIENTORDER_FOOD_EAT) //设置吃食物指令
+            clientMsg.setEatfoodmsg(eatfoodMsg) //设置客户端消息
+
+            var S = clientMsg.serializeBinary()//序列化
+            ws.send(S)
+
+            foods[i].disappear();
+            foods.splice(i,1);
+            //console.log(i + "号小球被吃");
+        }
+    }
+    */
+}
 
 //开始设置
 $(function () {
@@ -187,50 +223,32 @@ $(function () {
                 $(this.element).velocity("stop");
                 switch (event.which){
                     case 65:{ // ← 左 a
-                        console.log("A")
+                        //console.log("A")
                         this.p_left = 0
                     };break;
                     case 87:{// 上 "W"
-                        console.log("W")
+                        //console.log("W")
                         this.p_top =  0
                     };break;
                     case 68:{// 右 "D"
-                        console.log("D")
+                        //console.log("D")
                         this.p_left = 0
                     };break;
                     case 83:{// 下 "s"
-                        console.log("S")
+                        //console.log("S")
                         this.p_top = 0
                     };break;
                     default:break;
                 }
                 var b_left = parseFloat(this.element.style.left.split("px")[0]) + this.p_left
                 var b_top = parseFloat(this.element.style.top.split("px")[0]) + this.p_top
-                console.log("p_left: " + this.p_left + " p_top: " +this.p_top  + "b_left: " + b_left + " b_top: " +b_top + " event.which: " + event.which);
+                //console.log("p_left: " + this.p_left + " p_top: " +this.p_top  + "b_left: " + b_left + " b_top: " +b_top + " event.which: " + event.which);
                 $(this.element).velocity({
                     left: b_left, top: b_top
                 },{
                     duration:INIT_SPEED * this.size,
                     easing:"linear",                
-                    progress:function () {
-                        for(let i=0;i<foods.length;i++){
-                            if(Food.isEat(PlayerSelf, foods[i])){ //检测食物是否被球吃掉
-
-                                overfood.setId(foods[i].id)     //设置食物id
-                                eatfoodMsg.setFood(overfood)    //设置被吃食物信息
-                                clientMsg.setOrder(proto.Msg.ClientOrder.CLIENTORDER_FOOD_EAT) //设置吃食物指令
-                                clientMsg.setEatfoodmsg(eatfoodMsg) //设置客户端消息
-
-                                var S = clientMsg.serializeBinary()//序列化
-                                ws.send(S)
-
-                                //ball.eat(foods[i]);
-                                foods[i].disappear();
-                                foods.splice(i,1);
-                                console.log(i + "号小球被吃");
-                            }
-                        }
-                    },
+                    progress:BallEat(),
                 });
                 return true;
             }else return false;
@@ -239,52 +257,35 @@ $(function () {
         movebykey(){//移动
             if($.cookie("playerName")==this.name){
                 $(this.element).velocity("stop");
+                console.log(event.which)
                 switch (event.which){
-                    case 65:{ // ← 左 a
-                        console.log("A")
+                    case 97:{ // ← 左 a   //
+                       // console.log("A")
                         this.p_left = -1000
                     };break;
-                    case 87:{// 上 "W"
-                        console.log("W")
+                    case 119:{// 上 "W"
+                       // console.log("W")
                         this.p_top =  -1000
                     };break;
-                    case 68:{// 右 "D"
-                        console.log("D")
+                    case 100:{// 右 "D"
+                       // console.log("D")
                         this.p_left = 1000
                     };break;
-                    case 83:{// 下 "s"
-                        console.log("S")
+                    case 115:{// 下 "s"
+                       // console.log("S")
                         this.p_top = 1000
                     };break;
                     default:break;
                 }
                 var b_left = parseFloat(this.element.style.left.split("px")[0]) + this.p_left
                 var b_top = parseFloat(this.element.style.top.split("px")[0]) + this.p_top
-                console.log("p_left: " + this.p_left + " p_top: " +this.p_top  + "b_left: " + b_left + " b_top: " +b_top + " event.which: " + event.which);
+                //console.log("p_left: " + this.p_left + " p_top: " +this.p_top  + "b_left: " + b_left + " b_top: " +b_top + " event.which: " + event.which);
                 $(this.element).velocity({
                     left: b_left, top: b_top
                 },{
                     duration:INIT_SPEED * this.size,
                     easing:"linear",
-                    progress:function () {
-                        for(let i=0;i<foods.length;i++){
-                            if(Food.isEat(PlayerSelf, foods[i])){ //检测食物是否被球吃掉
-
-                                overfood.setId(foods[i].id)     //设置食物id
-                                eatfoodMsg.setFood(overfood)    //设置被吃食物信息
-                                clientMsg.setOrder(proto.Msg.ClientOrder.CLIENTORDER_FOOD_EAT) //设置吃食物指令
-                                clientMsg.setEatfoodmsg(eatfoodMsg) //设置客户端消息
-
-                                var S = clientMsg.serializeBinary()//序列化
-                                ws.send(S)
-
-                                //ball.eat(foods[i]);
-                                foods[i].disappear();
-                                foods.splice(i,1);
-                                console.log(i + "号小球被吃");
-                            }
-                        }
-                    },
+                    progress:BallEat(),
                 });
                 return true;
             }else return false;
@@ -332,7 +333,7 @@ $(function () {
 
     
     //键盘控制运动
-    $(document).on("keydown",function () {
+    $(document).on("keypress",function () {
         if(isDie==false){
             PlayerSelf.movebykey();
         }else{
