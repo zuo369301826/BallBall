@@ -26,8 +26,10 @@ if ("WebSocket" in window){
 
          var S = clientmsg.serializeBinary()//序列化
          ws.send(S) // 发送
-      },100);
+      },100);  
    };
+
+
 
    //接受指令
    ws.onmessage = function (evt) { 
@@ -102,7 +104,7 @@ if ("WebSocket" in window){
                      makeEnemy(enemys[index].array[0], enemys[index].array[1],enemys[index].array[2],enemys[index].array[3],enemys[index].array[4])
                      //console.log(enemys[index].array[0]+" "+ enemys[index].array[1]+" "+ enemys[index].array[2]+" "+ enemys[index].array[3]+" "+ enemys[index].array[4])
                   }
-                  //console.log("敌人更新成功")
+                  console.log("敌人更新成功")
                }// end  if (msg != null){
             }// end  case SERVERORDER_ENEMY_UPDATE
 
@@ -114,6 +116,7 @@ if ("WebSocket" in window){
    ws.onclose = function(){//断开连接
       alert("close WebSocket!");
    };
+
 }
 else{
    alert("no WebSocket!");

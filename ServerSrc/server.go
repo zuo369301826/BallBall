@@ -67,7 +67,8 @@ func RandbyRand() float32 {
 
 //TMap 地图
 var TMap = &Msg.MapInit{} //定义地图结构体
-var num = 100             //定义总个数
+var num int32 = 100       //定义食物总个数
+var pid int32 = 101       //袍子id
 
 // Room 房间信息
 var Room = &Msg.Room{} //定义房间结构体
@@ -76,10 +77,11 @@ var playerID int32     //定义玩家id
 
 // mapInit 初始化地图
 func mapInit() {
-	TMap.FOODS_NUM = *proto.Int(num) //初始化总数为100
-	for i := 0; i < num; i++ {
+	TMap.FOODS_NUM = *proto.Int32(num) //初始化总数为100
+	var i int32
+	for ; i < num; i++ {
 		TFood := &Msg.Food{}
-		TFood.Id = *proto.Int(i)
+		TFood.Id = *proto.Int32(i)
 		TFood.PosX = rand1.Float32()
 		TFood.PosY = rand1.Float32()
 		TFood.Bg = rand1.Float32()
@@ -279,6 +281,8 @@ func ReadClientMessage(ws *websocket.Conn, wg *sync.WaitGroup, id int, playerID 
 			return
 		}
 
+		log.Println(clientMsg)
+
 		switch clientMsg.Order { //查看指令
 
 		case Msg.ClientOrder_CLIENTORDER_FOOD_EAT: //如果是吃食物指令
@@ -286,9 +290,11 @@ func ReadClientMessage(ws *websocket.Conn, wg *sync.WaitGroup, id int, playerID 
 				Msg := clientMsg.GetEatfoodmsg() //获取吃食物消息
 				overfood := Msg.GetFood()        //获取消失的食物
 				overid := overfood.GetId()       //获取id
-				log.Println("[", clientMsg, "]", overid, "号食物消失")
-				SendPlayerUpdateOrderByFood(ws, overid, playerID) //发送玩家信息更新指令
-				SendMapUpdateOrder(overid)                        //发送地图更新指令给所有客户端
+				if overid < num {
+					log.Println("[", clientMsg, "]", overid, "号食物消失")
+					SendPlayerUpdateOrderByFood(ws, overid, playerID) //发送玩家信息更新指令
+					SendMapUpdateOrder(overid)                        //发送地图更新指令给所有客户端
+				}
 			}
 
 		case Msg.ClientOrder_CLIENTORDER_ENEMY_EAT: //如果是吃敌人指令
@@ -305,17 +311,25 @@ func ReadClientMessage(ws *websocket.Conn, wg *sync.WaitGroup, id int, playerID 
 
 		case Msg.ClientOrder_CLIENTORDER_DATA_FRAME: //客户端数据包
 			{
+				log.Println("-----")
 				msg := clientMsg.GetClientdataframe()
 				player := msg.GetPlayer() //获取到玩家信息
 				var index int32
 				for ; index < playernum; index++ {
+					log.Println("---2")
 					if Room.Players[index].PlayerId == playerID {
+						log.Println("---3")
 						Room.Players[index].PosX = player.GetPosX()
 						Room.Players[index].PosY = player.GetPosY()
 						log.Println(Room.Players[index].PosX, Room.Players[index].PosY, playerID, "号玩家数据帧")
 						SendEnemyDataOrder(playerID) //发送更新敌人指令
 					}
 				}
+			}
+
+		case Msg.ClientOrder_CLIENTORDER_SHOOT_SPORE: // 如果是发射袍子指令
+			{
+				log.Println("--xxxx---")
 			}
 
 		} // end switch clientMsg.Order

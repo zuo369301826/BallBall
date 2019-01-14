@@ -3,10 +3,11 @@ const INIT_SIZE = 60;           // 玩家小球初始大小
 const INIT_SPEED = 200;         // 小球初始速度
 const IS_SAME_SIZE = false;     // 食物/炸弹大小是否固定(false表示大小随机)
 const DEFAULT_FOOD_SIZE = 15;   // 食物默认大小(IS_SAME_SIZE为true时有效)
+const DEFAULT_SPORT_SIZE = 20;   // 食物默认大小
 
 INIT_COLOR = 5;                 // 小球默认颜色下标
 FOODS_NUM = 50;                 // 食物默认数量
-ENEMY_NUM = 0;                  //敌人数量
+ENEMY_NUM = 0;                  // 敌人数量
 
 ISINIT = true
 
@@ -85,9 +86,6 @@ function cleanEnemy(){
     Enemys = []
 }
 
-
-
-
 //------------------------------------------------------------食物类
 class Food{
     constructor(element, id,  size, bg, posX, posY){
@@ -118,6 +116,35 @@ class Food{
     }
 }// end class Food
 
+function shootspore(){
+
+    var s_left = PlayerSelf.element.getBoundingClientRect().left+document.documentElement.scrollLeft + PlayerSelf.size/2
+    var s_top  = PlayerSelf.element.getBoundingClientRect().top+document.documentElement.scrollTop+PlayerSelf.size/2
+
+    var spore = makeSpore( 101, s_left, s_top, 0.2, 20)
+
+    let b_left = event.pageX
+    let b_top = event.pageY
+
+    spore.posX = b_left
+    spore.posY = b_top
+
+    $(spore.element).velocity({
+        left: b_left, top: b_top
+    },{
+        duration:1000,
+        easing:"linear",
+        progress:function(){
+            if( Math.abs(spore.element.getBoundingClientRect().top+document.documentElement.scrollTop+PlayerSelf.size/2 - s_top) > 200 ||  Math.abs(spore.element.getBoundingClientRect().left+document.documentElement.scrollLeft+PlayerSelf.size/2 - s_left)>200){
+                $(spore.element).velocity("stop");
+                spore.posY = spore.element.getBoundingClientRect().top+document.documentElement.scrollTop
+                spore.posX = spore.element.getBoundingClientRect().left+document.documentElement.scrollLeft
+            }
+        } 
+    });
+
+}
+
 //食物集合
 var foods =  [];
 
@@ -138,6 +165,27 @@ function makeFood(id, x, y, _bg, fs) {
     let pos_y = y*document.documentElement.clientHeight;
     var food = new Food(food_div, id, size, bg, pos_x, pos_y);
     foods.push(food);
+
+}
+
+//生成食物
+function makeSpore(id, x, y, _bg, fs) {
+    var food_div = document.createElement("div");
+    food_div.setAttribute("class","food");
+    food_div.setAttribute("id", id);
+    document.body.insertBefore(food_div,document.body.firstChild);
+    let size;
+    if(IS_SAME_SIZE){
+        size = DEFAULT_FOOD_SIZE;
+    }else {
+        size = fs;
+    }
+    let bg = parseInt(_bg*(FOODS_COLORS.length-1));
+    let pos_x = x;
+    let pos_y = y;
+    var food = new Food(food_div, id, size, bg, pos_x, pos_y);
+    foods.push(food);
+    return food
 }
 
 function Change_Ball_Size(size){
@@ -315,8 +363,6 @@ $(function () {
             this.element.style.top = posy+"px";            
         }
 
-
-
         static Init(){
             //初始化球 Ball
             var color_index = INIT_COLOR; //默认颜色下标
@@ -354,6 +400,32 @@ $(function () {
             alert("You Die.");
         }
     });
+
+    //鼠标点击发射孢子
+    $(document).on("mousedown",function () {
+        console.log("点击鼠标");
+        shootspore();
+    });
+
+    /*
+    // //动画
+    setInterval( function () {
+        if(PlayerSelf.p_top == 0 && PlayerSelf.p_left == 0){
+            $(PlayerSelf.element).animate({
+                opacity:'1',
+                height:'+=5px',
+                width:'+=5px'
+            });
+            $(PlayerSelf.element).animate({
+                opacity:'1',
+                height:'-=5px',
+                width:'-=5px'
+            });
+        }
+    },5000);
+    */
+
+
 });
 
 

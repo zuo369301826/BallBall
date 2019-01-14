@@ -24,6 +24,7 @@ goog.exportSymbol('proto.Msg.PlayerSet', null, global);
 goog.exportSymbol('proto.Msg.Room', null, global);
 goog.exportSymbol('proto.Msg.ServerMessage', null, global);
 goog.exportSymbol('proto.Msg.ServerOrder', null, global);
+goog.exportSymbol('proto.Msg.ShootSpore', null, global);
 goog.exportSymbol('proto.Msg.Update', null, global);
 
 /**
@@ -2261,6 +2262,229 @@ proto.Msg.ClientDataFrame.prototype.hasPlayer = function() {
  * @extends {jspb.Message}
  * @constructor
  */
+proto.Msg.ShootSpore = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.Msg.ShootSpore, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.Msg.ShootSpore.displayName = 'proto.Msg.ShootSpore';
+}
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.Msg.ShootSpore.prototype.toObject = function(opt_includeInstance) {
+  return proto.Msg.ShootSpore.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.Msg.ShootSpore} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.Msg.ShootSpore.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    startPosx: +jspb.Message.getFieldWithDefault(msg, 1, 0.0),
+    startPosy: +jspb.Message.getFieldWithDefault(msg, 2, 0.0),
+    endPosx: +jspb.Message.getFieldWithDefault(msg, 3, 0.0),
+    endPosy: +jspb.Message.getFieldWithDefault(msg, 4, 0.0)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.Msg.ShootSpore}
+ */
+proto.Msg.ShootSpore.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.Msg.ShootSpore;
+  return proto.Msg.ShootSpore.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.Msg.ShootSpore} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.Msg.ShootSpore}
+ */
+proto.Msg.ShootSpore.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {number} */ (reader.readFloat());
+      msg.setStartPosx(value);
+      break;
+    case 2:
+      var value = /** @type {number} */ (reader.readFloat());
+      msg.setStartPosy(value);
+      break;
+    case 3:
+      var value = /** @type {number} */ (reader.readFloat());
+      msg.setEndPosx(value);
+      break;
+    case 4:
+      var value = /** @type {number} */ (reader.readFloat());
+      msg.setEndPosy(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.Msg.ShootSpore.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.Msg.ShootSpore.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.Msg.ShootSpore} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.Msg.ShootSpore.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getStartPosx();
+  if (f !== 0.0) {
+    writer.writeFloat(
+      1,
+      f
+    );
+  }
+  f = message.getStartPosy();
+  if (f !== 0.0) {
+    writer.writeFloat(
+      2,
+      f
+    );
+  }
+  f = message.getEndPosx();
+  if (f !== 0.0) {
+    writer.writeFloat(
+      3,
+      f
+    );
+  }
+  f = message.getEndPosy();
+  if (f !== 0.0) {
+    writer.writeFloat(
+      4,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional float start_posx = 1;
+ * @return {number}
+ */
+proto.Msg.ShootSpore.prototype.getStartPosx = function() {
+  return /** @type {number} */ (+jspb.Message.getFieldWithDefault(this, 1, 0.0));
+};
+
+
+/** @param {number} value */
+proto.Msg.ShootSpore.prototype.setStartPosx = function(value) {
+  jspb.Message.setProto3FloatField(this, 1, value);
+};
+
+
+/**
+ * optional float start_posy = 2;
+ * @return {number}
+ */
+proto.Msg.ShootSpore.prototype.getStartPosy = function() {
+  return /** @type {number} */ (+jspb.Message.getFieldWithDefault(this, 2, 0.0));
+};
+
+
+/** @param {number} value */
+proto.Msg.ShootSpore.prototype.setStartPosy = function(value) {
+  jspb.Message.setProto3FloatField(this, 2, value);
+};
+
+
+/**
+ * optional float end_posx = 3;
+ * @return {number}
+ */
+proto.Msg.ShootSpore.prototype.getEndPosx = function() {
+  return /** @type {number} */ (+jspb.Message.getFieldWithDefault(this, 3, 0.0));
+};
+
+
+/** @param {number} value */
+proto.Msg.ShootSpore.prototype.setEndPosx = function(value) {
+  jspb.Message.setProto3FloatField(this, 3, value);
+};
+
+
+/**
+ * optional float end_posy = 4;
+ * @return {number}
+ */
+proto.Msg.ShootSpore.prototype.getEndPosy = function() {
+  return /** @type {number} */ (+jspb.Message.getFieldWithDefault(this, 4, 0.0));
+};
+
+
+/** @param {number} value */
+proto.Msg.ShootSpore.prototype.setEndPosy = function(value) {
+  jspb.Message.setProto3FloatField(this, 4, value);
+};
+
+
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
 proto.Msg.ClientMessage = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
@@ -2300,7 +2524,8 @@ proto.Msg.ClientMessage.toObject = function(includeInstance, msg) {
     order: jspb.Message.getFieldWithDefault(msg, 1, 0),
     eatfoodmsg: (f = msg.getEatfoodmsg()) && proto.Msg.EatFoodMsg.toObject(includeInstance, f),
     eatenemymsg: (f = msg.getEatenemymsg()) && proto.Msg.EatEnemyMsg.toObject(includeInstance, f),
-    clientdataframe: (f = msg.getClientdataframe()) && proto.Msg.ClientDataFrame.toObject(includeInstance, f)
+    clientdataframe: (f = msg.getClientdataframe()) && proto.Msg.ClientDataFrame.toObject(includeInstance, f),
+    shootspore: (f = msg.getShootspore()) && proto.Msg.ShootSpore.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -2355,6 +2580,11 @@ proto.Msg.ClientMessage.deserializeBinaryFromReader = function(msg, reader) {
       var value = new proto.Msg.ClientDataFrame;
       reader.readMessage(value,proto.Msg.ClientDataFrame.deserializeBinaryFromReader);
       msg.setClientdataframe(value);
+      break;
+    case 5:
+      var value = new proto.Msg.ShootSpore;
+      reader.readMessage(value,proto.Msg.ShootSpore.deserializeBinaryFromReader);
+      msg.setShootspore(value);
       break;
     default:
       reader.skipField();
@@ -2414,6 +2644,14 @@ proto.Msg.ClientMessage.serializeBinaryToWriter = function(message, writer) {
       4,
       f,
       proto.Msg.ClientDataFrame.serializeBinaryToWriter
+    );
+  }
+  f = message.getShootspore();
+  if (f != null) {
+    writer.writeMessage(
+      5,
+      f,
+      proto.Msg.ShootSpore.serializeBinaryToWriter
     );
   }
 };
@@ -2525,6 +2763,36 @@ proto.Msg.ClientMessage.prototype.hasClientdataframe = function() {
 
 
 /**
+ * optional ShootSpore shootspore = 5;
+ * @return {?proto.Msg.ShootSpore}
+ */
+proto.Msg.ClientMessage.prototype.getShootspore = function() {
+  return /** @type{?proto.Msg.ShootSpore} */ (
+    jspb.Message.getWrapperField(this, proto.Msg.ShootSpore, 5));
+};
+
+
+/** @param {?proto.Msg.ShootSpore|undefined} value */
+proto.Msg.ClientMessage.prototype.setShootspore = function(value) {
+  jspb.Message.setWrapperField(this, 5, value);
+};
+
+
+proto.Msg.ClientMessage.prototype.clearShootspore = function() {
+  this.setShootspore(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.Msg.ClientMessage.prototype.hasShootspore = function() {
+  return jspb.Message.getField(this, 5) != null;
+};
+
+
+/**
  * @enum {number}
  */
 proto.Msg.ServerOrder = {
@@ -2541,7 +2809,8 @@ proto.Msg.ServerOrder = {
 proto.Msg.ClientOrder = {
   CLIENTORDER_FOOD_EAT: 0,
   CLIENTORDER_ENEMY_EAT: 1,
-  CLIENTORDER_DATA_FRAME: 2
+  CLIENTORDER_DATA_FRAME: 2,
+  CLIENTORDER_SHOOT_SPORE: 3
 };
 
 goog.object.extend(exports, proto.Msg);

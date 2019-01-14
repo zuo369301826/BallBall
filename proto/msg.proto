@@ -65,6 +65,7 @@ enum ClientOrder{
     CLIENTORDER_FOOD_EAT = 0;   //玩家吃食物
     CLIENTORDER_ENEMY_EAT = 1;   //玩家吃敌人
     CLIENTORDER_DATA_FRAME = 2;   //客户端数据帧
+    CLIENTORDER_SHOOT_SPORE = 3; //玩家发射子弹
 };
 
 message EatFoodMsg{     // 玩家吃食物消息 0
@@ -75,13 +76,23 @@ message EatEnemyMsg{    // 玩家吃敌人消息 1
     Player player = 1;
 };
 
-message ClientDataFrame{ // 客户端数据帧 2
+
+message ClientDataFrame{ // 客户端数据帧 3
     Player player = 1; // 玩家当前信息
-}
+};
+
+message ShootSpore{
+    float start_posx = 1;
+    float start_posy = 2;
+    float end_posx = 3;
+    float end_posy = 4;
+};
+
 
 message ClientMessage{
     ClientOrder order = 1;
     EatFoodMsg eatfoodmsg = 2;
     EatEnemyMsg eatenemymsg = 3;
     ClientDataFrame clientdataframe = 4;
+    ShootSpore shootspore = 5;
 };
