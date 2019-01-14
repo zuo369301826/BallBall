@@ -30,6 +30,8 @@ enum ServerOrder{
     SERVERORDER_PLAYER_SET = 2;     //初始化人物
     SERVERORDER_ENEMY_UPDATE = 3;   //更新所有敌人
     SERVERORDER_GAMEOVER = 4;       //游戏结束
+    SERVERORDER_CREATP_SPORE = 5;   //生成孢子
+    SERVERORDER_CLEAR_SPORE =6;    //清除孢子
 };
 
 message MapInit{            //初始化地图 0
@@ -51,12 +53,26 @@ message EnemyUpdata{         //更新所有敌人信息 3
     repeated Player enemy = 2; //玩家信息
 };
 
+message CreateSpore{         //生成孢子 5
+    int32 sporeid = 1;
+    float start_posx = 2;
+    float start_posy = 3;
+    float end_posx = 4;
+    float end_posy = 5;
+};
+
+message ClearSpore{         //生成孢子 5
+    int32 sporeid = 1;
+};
+
 message ServerMessage{  //服务器消息
     ServerOrder order = 1;
     MapInit map = 2;
     Update update = 3;
     PlayerSet playerset = 4; 
     EnemyUpdata enemysmsg = 5;
+    CreateSpore createspore = 6;
+    ClearSpore clearspore = 7;
 };
 
 

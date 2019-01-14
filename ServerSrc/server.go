@@ -39,7 +39,6 @@ func (hub *Hub) Init() {
 
 // Add 添加端口
 func (hub *Hub) Add(ws *websocket.Conn, wsid int32) {
-	//hub.WSs = append(hub.WSs, ws)
 	hub.WSs[wsid] = ws
 	hub.num++
 	log.Println("连接器: ", hub)
@@ -57,18 +56,16 @@ func RandbyRand() float32 {
 	var f1 = rand1.Float32() * 23
 	var f2 = rand1.Float32() * 71
 	var f3 = f1 * f2
-	//fmt.Println("f1:", f1, "f2:", f2, "f3:", f3)
 	for f3 > 1 {
 		f3 /= 10
 	}
-	//fmt.Println("*f3:", f3)
 	return f3
 }
 
 //TMap 地图
 var TMap = &Msg.MapInit{} //定义地图结构体
-var num int32 = 100       //定义食物总个数
-var pid int32 = 101       //袍子id
+var num int32 = 500       //定义食物总个数
+var pid int32 = 10000     //袍子id
 
 // Room 房间信息
 var Room = &Msg.Room{} //定义房间结构体
@@ -111,6 +108,34 @@ func SendMapInitOrder(ws *websocket.Conn) {
 	fmt.Println("MapInit")
 }
 
+// SendMapUpdateOrderBySpore 发送更新地图食物指令
+func SendMapUpdateOrderBySpore(foodid int32) {
+
+	clearspore := &Msg.ClearSpore{} //服务器指令
+	clearspore.Sporeid = foodid
+	//设置指令
+	servermsg := &Msg.ServerMessage{}                         //服务器指令
+	servermsg.Order = Msg.ServerOrder_SERVERORDER_CLEAR_SPORE //设置为更新孢子
+	servermsg.Clearspore = clearspore
+
+	//序列化
+	pData, err := proto.Marshal(servermsg)
+	if err != nil {
+		log.Fatalln("序列化错误: ", err)
+		return
+	}
+
+	//给所有的客户端发送数据
+	for index := range hub.WSs {
+		if err := websocket.Message.Send(hub.WSs[index], pData); err != nil {
+			log.Println("hub: ", hub)
+			log.Println("hub: ", hub)
+			log.Fatalln("SendMapUpdateOrder websocket.Message.Send(ws, pData): ", err)
+		}
+	}
+	log.Println("所有玩家孢子已更新")
+}
+
 // SendMapUpdateOrder 发送更新地图食物指令
 func SendMapUpdateOrder(foodid int32) {
 
@@ -145,6 +170,35 @@ func SendMapUpdateOrder(foodid int32) {
 		}
 	}
 	log.Println("所有玩家地图已更新")
+}
+
+// SendPlayerUpdateOrderBySpore 发送更新玩家信息的指令吃食物
+func SendPlayerUpdateOrderBySpore(ws *websocket.Conn, foodid int32, playerID int32) {
+	var eatfoodsize float32 = 10
+	var index int32
+	for ; index < playernum; index++ {
+		if Room.Players[index].PlayerId == playerID {
+			Room.Players[index].Size += eatfoodsize                  //改变大小
+			playerset := &Msg.PlayerSet{}                            //准备玩家设置协议
+			playerset.Player = Room.Players[index]                   //添加玩家信息
+			servermsg := &Msg.ServerMessage{}                        //准备服务器消息协议
+			servermsg.Order = Msg.ServerOrder_SERVERORDER_PLAYER_SET //设置服务器命令
+			servermsg.Playerset = playerset                          //设置内容
+
+			//序列化
+			pData, err := proto.Marshal(servermsg)
+			if err != nil {
+				log.Fatalln("序列化错误", err)
+			}
+
+			//发送数据
+			if err := websocket.Message.Send(ws, pData); err != nil {
+				log.Fatalln("SendPlayerUpdateOrderByFood websocket.Message.Send(ws, pData):", err)
+				return
+			}
+			break
+		}
+	}
 }
 
 // SendPlayerUpdateOrderByFood 发送更新玩家信息的指令吃食物
@@ -290,10 +344,14 @@ func ReadClientMessage(ws *websocket.Conn, wg *sync.WaitGroup, id int, playerID 
 				Msg := clientMsg.GetEatfoodmsg() //获取吃食物消息
 				overfood := Msg.GetFood()        //获取消失的食物
 				overid := overfood.GetId()       //获取id
-				if overid < num {
+				if overid < 10000 {
 					log.Println("[", clientMsg, "]", overid, "号食物消失")
 					SendPlayerUpdateOrderByFood(ws, overid, playerID) //发送玩家信息更新指令
 					SendMapUpdateOrder(overid)                        //发送地图更新指令给所有客户端
+				} else {
+					log.Println("[", clientMsg, "]", overid, "号孢子消失")
+					SendPlayerUpdateOrderBySpore(ws, overid, playerID) //发送玩家信息更新指令
+					SendMapUpdateOrderBySpore(overid)
 				}
 			}
 
@@ -311,14 +369,12 @@ func ReadClientMessage(ws *websocket.Conn, wg *sync.WaitGroup, id int, playerID 
 
 		case Msg.ClientOrder_CLIENTORDER_DATA_FRAME: //客户端数据包
 			{
-				log.Println("-----")
 				msg := clientMsg.GetClientdataframe()
 				player := msg.GetPlayer() //获取到玩家信息
 				var index int32
 				for ; index < playernum; index++ {
-					log.Println("---2")
 					if Room.Players[index].PlayerId == playerID {
-						log.Println("---3")
+						Room.Players[index].Size = player.GetSize()
 						Room.Players[index].PosX = player.GetPosX()
 						Room.Players[index].PosY = player.GetPosY()
 						log.Println(Room.Players[index].PosX, Room.Players[index].PosY, playerID, "号玩家数据帧")
@@ -329,9 +385,34 @@ func ReadClientMessage(ws *websocket.Conn, wg *sync.WaitGroup, id int, playerID 
 
 		case Msg.ClientOrder_CLIENTORDER_SHOOT_SPORE: // 如果是发射袍子指令
 			{
-				log.Println("--xxxx---")
-			}
+				msg := clientMsg.GetShootspore()
+				pid++
 
+				createspore := &Msg.CreateSpore{}
+				createspore.Sporeid = pid
+				createspore.StartPosx = msg.GetStartPosx()
+				createspore.StartPosy = msg.GetStartPosy()
+				createspore.EndPosx = msg.GetEndPosx()
+				createspore.EndPosy = msg.GetEndPosy()
+
+				servermsg := &Msg.ServerMessage{}
+				servermsg.Order = Msg.ServerOrder_SERVERORDER_CREATP_SPORE
+				servermsg.Createspore = createspore
+
+				pData, _ := proto.Marshal(servermsg)
+
+				//给所有的客户端发送数据
+				for index := range hub.WSs {
+					//if index != playerID {
+					if err := websocket.Message.Send(hub.WSs[index], pData); err != nil {
+						log.Println("hub: ", hub)
+						log.Println("hub: ", hub)
+						log.Fatalln("SendMapUpdateOrder websocket.Message.Send(ws, pData): ", err)
+					}
+					//}
+				}
+				log.Println("所有玩家孢子已更新")
+			}
 		} // end switch clientMsg.Order
 	} // end for {
 }
