@@ -19,6 +19,7 @@ if ("WebSocket" in window){
       setInterval( function () {
          var X = PlayerSelf.element.getBoundingClientRect().left+document.documentElement.scrollLeft; 
          var Y = PlayerSelf.element.getBoundingClientRect().top+document.documentElement.scrollTop;
+         player_0.setSize( PlayerSelf.size)
          player_0.setPosx(X)
          player_0.setPosy(Y)
          dataframe.setPlayer(player_0)
@@ -104,10 +105,39 @@ if ("WebSocket" in window){
                      makeEnemy(enemys[index].array[0], enemys[index].array[1],enemys[index].array[2],enemys[index].array[3],enemys[index].array[4])
                      //console.log(enemys[index].array[0]+" "+ enemys[index].array[1]+" "+ enemys[index].array[2]+" "+ enemys[index].array[3]+" "+ enemys[index].array[4])
                   }
-                  console.log("敌人更新成功")
+                     console.log("敌人更新成功")
+               }// end  if (msg != null){
+            }// end  case SERVERORDER_ENEMY_UPDATE
+            
+            case proto.Msg.ServerOrder.SERVERORDER_CREATP_SPORE:{//如果是更新孢子
+               var msg = servermsg.getCreatespore()
+               if (msg != null){
+                  var id =  msg.getSporeid()
+                  var s_x = msg.getStartPosx()
+                  var s_y = msg.getStartPosy()
+                  var e_x =  msg.getEndPosx()
+                  var e_y =  msg.getEndPosy()
+                  shootspore(id, s_x, s_y, e_x, e_y);
+                  console.log("shoot spore")
                }// end  if (msg != null){
             }// end  case SERVERORDER_ENEMY_UPDATE
 
+            case proto.Msg.ServerOrder.SERVERORDER_CLEAR_SPORE:{//如果是更新孢子
+               var msg = servermsg.getClearspore()
+               
+               if (msg != null){
+                  var id = msg.getSporeid()
+                  for(index=0; index<FOODS_NUM; index++){
+                     if(foods[index] && foods[index].id == id){
+                        //console.log("foodid"+foods[index].id+ "id"+ id)
+                        foods[index].disappear();
+                        foods.splice(index,1); 
+                        break;
+                     }                    
+                  }
+                  console.log("clear spore")
+               }// end  if (msg != null){
+            }// end  case SERVERORDER_ENEMY_UPDATE
 
          } //end switch
       }// end reader.onload = function (e)

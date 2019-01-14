@@ -116,15 +116,15 @@ class Food{
     }
 }// end class Food
 
-function shootspore(){
+function shootspore(id,s_left,s_top,e_x, e_y){
 
-    var s_left = PlayerSelf.element.getBoundingClientRect().left+document.documentElement.scrollLeft + PlayerSelf.size/2
-    var s_top  = PlayerSelf.element.getBoundingClientRect().top+document.documentElement.scrollTop+PlayerSelf.size/2
+    //var s_left = PlayerSelf.element.getBoundingClientRect().left+document.documentElement.scrollLeft + PlayerSelf.size/2
+    //var s_top  = PlayerSelf.element.getBoundingClientRect().top+document.documentElement.scrollTop+PlayerSelf.size/2
 
-    var spore = makeSpore( 101, s_left, s_top, 0.2, 20)
+    var spore = makeSpore( id, s_left, s_top, 0.2, 20)
 
-    let b_left = event.pageX
-    let b_top = event.pageY
+    let b_left = e_x
+    let b_top = e_y
 
     spore.posX = b_left
     spore.posY = b_top
@@ -404,7 +404,27 @@ $(function () {
     //鼠标点击发射孢子
     $(document).on("mousedown",function () {
         console.log("点击鼠标");
-        shootspore();
+
+        if (PlayerSelf.size > 60){
+
+            PlayerSelf.size =  PlayerSelf.size - 10
+
+            Change_Ball_Size( PlayerSelf.size)
+        
+            var shootspore = new proto.Msg.ShootSpore();
+            shootspore.setStartPosx(PlayerSelf.element.getBoundingClientRect().left + document.documentElement.scrollLeft + PlayerSelf.size/2)
+            shootspore.setStartPosy(PlayerSelf.element.getBoundingClientRect().top + document.documentElement.scrollTop + PlayerSelf.size/2)
+            shootspore.setEndPosx(event.pageX)
+            shootspore.setEndPosy(event.pageY)
+    
+            var clientmsG = new proto.Msg.ClientMessage();
+            clientmsG.setOrder(proto.Msg.ClientOrder.CLIENTORDER_SHOOT_SPORE)
+            clientmsG.setShootspore(shootspore)
+    
+            //console.log(clientmsG)
+            var S = clientmsG.serializeBinary()//序列化
+            ws.send(S)
+        }
     });
 
     /*

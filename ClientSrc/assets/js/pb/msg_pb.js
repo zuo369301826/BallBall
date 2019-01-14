@@ -11,9 +11,11 @@ var jspb = require('google-protobuf');
 var goog = jspb;
 var global = Function('return this')();
 
+goog.exportSymbol('proto.Msg.ClearSpore', null, global);
 goog.exportSymbol('proto.Msg.ClientDataFrame', null, global);
 goog.exportSymbol('proto.Msg.ClientMessage', null, global);
 goog.exportSymbol('proto.Msg.ClientOrder', null, global);
+goog.exportSymbol('proto.Msg.CreateSpore', null, global);
 goog.exportSymbol('proto.Msg.EatEnemyMsg', null, global);
 goog.exportSymbol('proto.Msg.EatFoodMsg', null, global);
 goog.exportSymbol('proto.Msg.EnemyUpdata', null, global);
@@ -1467,6 +1469,398 @@ proto.Msg.EnemyUpdata.prototype.clearEnemyList = function() {
  * @extends {jspb.Message}
  * @constructor
  */
+proto.Msg.CreateSpore = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.Msg.CreateSpore, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.Msg.CreateSpore.displayName = 'proto.Msg.CreateSpore';
+}
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.Msg.CreateSpore.prototype.toObject = function(opt_includeInstance) {
+  return proto.Msg.CreateSpore.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.Msg.CreateSpore} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.Msg.CreateSpore.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    sporeid: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    startPosx: +jspb.Message.getFieldWithDefault(msg, 2, 0.0),
+    startPosy: +jspb.Message.getFieldWithDefault(msg, 3, 0.0),
+    endPosx: +jspb.Message.getFieldWithDefault(msg, 4, 0.0),
+    endPosy: +jspb.Message.getFieldWithDefault(msg, 5, 0.0)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.Msg.CreateSpore}
+ */
+proto.Msg.CreateSpore.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.Msg.CreateSpore;
+  return proto.Msg.CreateSpore.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.Msg.CreateSpore} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.Msg.CreateSpore}
+ */
+proto.Msg.CreateSpore.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setSporeid(value);
+      break;
+    case 2:
+      var value = /** @type {number} */ (reader.readFloat());
+      msg.setStartPosx(value);
+      break;
+    case 3:
+      var value = /** @type {number} */ (reader.readFloat());
+      msg.setStartPosy(value);
+      break;
+    case 4:
+      var value = /** @type {number} */ (reader.readFloat());
+      msg.setEndPosx(value);
+      break;
+    case 5:
+      var value = /** @type {number} */ (reader.readFloat());
+      msg.setEndPosy(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.Msg.CreateSpore.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.Msg.CreateSpore.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.Msg.CreateSpore} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.Msg.CreateSpore.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getSporeid();
+  if (f !== 0) {
+    writer.writeInt32(
+      1,
+      f
+    );
+  }
+  f = message.getStartPosx();
+  if (f !== 0.0) {
+    writer.writeFloat(
+      2,
+      f
+    );
+  }
+  f = message.getStartPosy();
+  if (f !== 0.0) {
+    writer.writeFloat(
+      3,
+      f
+    );
+  }
+  f = message.getEndPosx();
+  if (f !== 0.0) {
+    writer.writeFloat(
+      4,
+      f
+    );
+  }
+  f = message.getEndPosy();
+  if (f !== 0.0) {
+    writer.writeFloat(
+      5,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional int32 sporeid = 1;
+ * @return {number}
+ */
+proto.Msg.CreateSpore.prototype.getSporeid = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+};
+
+
+/** @param {number} value */
+proto.Msg.CreateSpore.prototype.setSporeid = function(value) {
+  jspb.Message.setProto3IntField(this, 1, value);
+};
+
+
+/**
+ * optional float start_posx = 2;
+ * @return {number}
+ */
+proto.Msg.CreateSpore.prototype.getStartPosx = function() {
+  return /** @type {number} */ (+jspb.Message.getFieldWithDefault(this, 2, 0.0));
+};
+
+
+/** @param {number} value */
+proto.Msg.CreateSpore.prototype.setStartPosx = function(value) {
+  jspb.Message.setProto3FloatField(this, 2, value);
+};
+
+
+/**
+ * optional float start_posy = 3;
+ * @return {number}
+ */
+proto.Msg.CreateSpore.prototype.getStartPosy = function() {
+  return /** @type {number} */ (+jspb.Message.getFieldWithDefault(this, 3, 0.0));
+};
+
+
+/** @param {number} value */
+proto.Msg.CreateSpore.prototype.setStartPosy = function(value) {
+  jspb.Message.setProto3FloatField(this, 3, value);
+};
+
+
+/**
+ * optional float end_posx = 4;
+ * @return {number}
+ */
+proto.Msg.CreateSpore.prototype.getEndPosx = function() {
+  return /** @type {number} */ (+jspb.Message.getFieldWithDefault(this, 4, 0.0));
+};
+
+
+/** @param {number} value */
+proto.Msg.CreateSpore.prototype.setEndPosx = function(value) {
+  jspb.Message.setProto3FloatField(this, 4, value);
+};
+
+
+/**
+ * optional float end_posy = 5;
+ * @return {number}
+ */
+proto.Msg.CreateSpore.prototype.getEndPosy = function() {
+  return /** @type {number} */ (+jspb.Message.getFieldWithDefault(this, 5, 0.0));
+};
+
+
+/** @param {number} value */
+proto.Msg.CreateSpore.prototype.setEndPosy = function(value) {
+  jspb.Message.setProto3FloatField(this, 5, value);
+};
+
+
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.Msg.ClearSpore = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.Msg.ClearSpore, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.Msg.ClearSpore.displayName = 'proto.Msg.ClearSpore';
+}
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.Msg.ClearSpore.prototype.toObject = function(opt_includeInstance) {
+  return proto.Msg.ClearSpore.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.Msg.ClearSpore} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.Msg.ClearSpore.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    sporeid: jspb.Message.getFieldWithDefault(msg, 1, 0)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.Msg.ClearSpore}
+ */
+proto.Msg.ClearSpore.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.Msg.ClearSpore;
+  return proto.Msg.ClearSpore.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.Msg.ClearSpore} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.Msg.ClearSpore}
+ */
+proto.Msg.ClearSpore.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setSporeid(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.Msg.ClearSpore.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.Msg.ClearSpore.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.Msg.ClearSpore} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.Msg.ClearSpore.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getSporeid();
+  if (f !== 0) {
+    writer.writeInt32(
+      1,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional int32 sporeid = 1;
+ * @return {number}
+ */
+proto.Msg.ClearSpore.prototype.getSporeid = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+};
+
+
+/** @param {number} value */
+proto.Msg.ClearSpore.prototype.setSporeid = function(value) {
+  jspb.Message.setProto3IntField(this, 1, value);
+};
+
+
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
 proto.Msg.ServerMessage = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
@@ -1507,7 +1901,9 @@ proto.Msg.ServerMessage.toObject = function(includeInstance, msg) {
     map: (f = msg.getMap()) && proto.Msg.MapInit.toObject(includeInstance, f),
     update: (f = msg.getUpdate()) && proto.Msg.Update.toObject(includeInstance, f),
     playerset: (f = msg.getPlayerset()) && proto.Msg.PlayerSet.toObject(includeInstance, f),
-    enemysmsg: (f = msg.getEnemysmsg()) && proto.Msg.EnemyUpdata.toObject(includeInstance, f)
+    enemysmsg: (f = msg.getEnemysmsg()) && proto.Msg.EnemyUpdata.toObject(includeInstance, f),
+    createspore: (f = msg.getCreatespore()) && proto.Msg.CreateSpore.toObject(includeInstance, f),
+    clearspore: (f = msg.getClearspore()) && proto.Msg.ClearSpore.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -1567,6 +1963,16 @@ proto.Msg.ServerMessage.deserializeBinaryFromReader = function(msg, reader) {
       var value = new proto.Msg.EnemyUpdata;
       reader.readMessage(value,proto.Msg.EnemyUpdata.deserializeBinaryFromReader);
       msg.setEnemysmsg(value);
+      break;
+    case 6:
+      var value = new proto.Msg.CreateSpore;
+      reader.readMessage(value,proto.Msg.CreateSpore.deserializeBinaryFromReader);
+      msg.setCreatespore(value);
+      break;
+    case 7:
+      var value = new proto.Msg.ClearSpore;
+      reader.readMessage(value,proto.Msg.ClearSpore.deserializeBinaryFromReader);
+      msg.setClearspore(value);
       break;
     default:
       reader.skipField();
@@ -1634,6 +2040,22 @@ proto.Msg.ServerMessage.serializeBinaryToWriter = function(message, writer) {
       5,
       f,
       proto.Msg.EnemyUpdata.serializeBinaryToWriter
+    );
+  }
+  f = message.getCreatespore();
+  if (f != null) {
+    writer.writeMessage(
+      6,
+      f,
+      proto.Msg.CreateSpore.serializeBinaryToWriter
+    );
+  }
+  f = message.getClearspore();
+  if (f != null) {
+    writer.writeMessage(
+      7,
+      f,
+      proto.Msg.ClearSpore.serializeBinaryToWriter
     );
   }
 };
@@ -1771,6 +2193,66 @@ proto.Msg.ServerMessage.prototype.clearEnemysmsg = function() {
  */
 proto.Msg.ServerMessage.prototype.hasEnemysmsg = function() {
   return jspb.Message.getField(this, 5) != null;
+};
+
+
+/**
+ * optional CreateSpore createspore = 6;
+ * @return {?proto.Msg.CreateSpore}
+ */
+proto.Msg.ServerMessage.prototype.getCreatespore = function() {
+  return /** @type{?proto.Msg.CreateSpore} */ (
+    jspb.Message.getWrapperField(this, proto.Msg.CreateSpore, 6));
+};
+
+
+/** @param {?proto.Msg.CreateSpore|undefined} value */
+proto.Msg.ServerMessage.prototype.setCreatespore = function(value) {
+  jspb.Message.setWrapperField(this, 6, value);
+};
+
+
+proto.Msg.ServerMessage.prototype.clearCreatespore = function() {
+  this.setCreatespore(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.Msg.ServerMessage.prototype.hasCreatespore = function() {
+  return jspb.Message.getField(this, 6) != null;
+};
+
+
+/**
+ * optional ClearSpore clearspore = 7;
+ * @return {?proto.Msg.ClearSpore}
+ */
+proto.Msg.ServerMessage.prototype.getClearspore = function() {
+  return /** @type{?proto.Msg.ClearSpore} */ (
+    jspb.Message.getWrapperField(this, proto.Msg.ClearSpore, 7));
+};
+
+
+/** @param {?proto.Msg.ClearSpore|undefined} value */
+proto.Msg.ServerMessage.prototype.setClearspore = function(value) {
+  jspb.Message.setWrapperField(this, 7, value);
+};
+
+
+proto.Msg.ServerMessage.prototype.clearClearspore = function() {
+  this.setClearspore(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.Msg.ServerMessage.prototype.hasClearspore = function() {
+  return jspb.Message.getField(this, 7) != null;
 };
 
 
@@ -2800,7 +3282,9 @@ proto.Msg.ServerOrder = {
   SERVERORDER_MAP_UPDATE: 1,
   SERVERORDER_PLAYER_SET: 2,
   SERVERORDER_ENEMY_UPDATE: 3,
-  SERVERORDER_GAMEOVER: 4
+  SERVERORDER_GAMEOVER: 4,
+  SERVERORDER_CREATP_SPORE: 5,
+  SERVERORDER_CLEAR_SPORE: 6
 };
 
 /**
